@@ -2,10 +2,10 @@ package blog
 
 import (
 	"context"
+	"github.com/duhruh/blog/app/blog/entity"
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/duhruh/blog/app/blog/entity"
 )
 
 type endpointFactory struct {
@@ -52,7 +52,6 @@ func (ef endpointFactory) CreateBlogEndpoint() endpoint.Endpoint {
 		return r, err
 	}
 }
-
 
 func (ef endpointFactory) ListPostsEndpoint() endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {

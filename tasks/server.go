@@ -6,6 +6,7 @@ import (
 	"github.com/duhruh/tackle/task"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -37,23 +38,23 @@ func (t ServerTask) Arguments() []task.Argument { return t.arguments }
 
 func (t ServerTask) Run(w io.Writer) {
 	var (
-		gitCommit   = "ec71764"
-		buildNumber = "1"
-		version     = "v1.0.0"
-		buildTime   = time.Now().UTC().Format(time.RFC3339Nano)
-		cfgPkg      = "github.com/duhruh/blog/config"
+		gitCommit, _ = exec.Command("git", "rev-parse", "--short", "HEAD").Output()
+		buildNumber  = "1"
+		version      = "v1.0.0"
+		buildTime    = time.Now().UTC().Format(time.RFC3339Nano)
+		cfgPkg       = "github.com/duhruh/blog/config"
 	)
 
 	cmd := exec.Command(
 		"go",
 		"run",
 		"-ldflags",
-		""+t.ldflag(cfgPkg, "GitCommit", gitCommit)+" "+
+		""+t.ldflag(cfgPkg, "GitCommit", strings.Trim(string(gitCommit), "\n"))+" "+
 			t.ldflag(cfgPkg, "BuildNumber", buildNumber)+" "+
 			t.ldflag(cfgPkg, "Version", version)+" "+
 			t.ldflag(cfgPkg, "BuildTime", buildTime),
 		"cmd/api/main.go",
-		"-http-bind-address=:8081",
+		"-http-bind-address=:8080",
 	)
 	cmd.Env = os.Environ()
 	cmd.Stdin = os.Stdin

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto;
+
+service Blog {
+    rpc ListBlogs (ListBlogsRequest) returns (ListBlogsResponse) {}
+
+}
+
+message ListBlogsRequest {}
+
+message ListBlogsResponse {
+    string id = 1;
+    string name = 2;
+}
+

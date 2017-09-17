@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"github.com/duhruh/blog/app/blog"
-	http3 "github.com/duhruh/scaffold/app/transport/http"
+	http3 "github.com/duhruh/blog/app/transport/http"
 	"github.com/duhruh/tackle"
 	http2 "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
