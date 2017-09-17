@@ -1,13 +1,11 @@
 package grpc
-import (
 
+import (
+	"context"
+	"github.com/duhruh/tackle"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
-	"context"
-	"github.com/duhruh/blog/app/blog/proto"
-	"github.com/duhruh/tackle"
 )
-
 
 type encoderFactory struct {
 	tacklegrpc.EncoderFactory
@@ -22,7 +20,6 @@ func NewEncoderFactory() tacklegrpc.EncoderFactory {
 func (ef encoderFactory) Generate(e string) (tacklegrpc.Encoder, error) {
 	return ef.GenerateWithInstance(ef, e)
 }
-
 
 func (hs encoderFactory) ListBlogEncoder() tacklegrpc.Encoder {
 	return tacklegrpc.NewEncoder(hs.listBlogsRequest(), hs.listBlogsResponse())

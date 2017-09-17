@@ -46,7 +46,9 @@ func (ht appHttpTransport) Mount(transports []http2.HttpTransport) {
 		errs <- fmt.Errorf("%s", <-c)
 	}()
 
-	ht.logger.Log("terminated", <-errs)
+	go func() {
+		ht.logger.Log("terminated", <-errs)
+	}()
 }
 
 func accessControl(h http.Handler) http.Handler {

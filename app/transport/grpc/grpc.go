@@ -20,7 +20,7 @@ type appGrpcTransport struct {
 	addr   string
 }
 
-func NewHttpTransport(l log.Logger, addr string) GrpcTransport {
+func NewGrpcTransport(l log.Logger, addr string) GrpcTransport {
 	return appGrpcTransport{logger: l, addr: addr}
 }
 
@@ -49,5 +49,8 @@ func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport) {
 		grpcListener.Close()
 	}()
 
-	gt.logger.Log("terminated", <-errs)
+	go func() {
+		gt.logger.Log("terminated", <-errs)
+	}()
+
 }

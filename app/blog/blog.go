@@ -4,22 +4,26 @@ import (
 	"context"
 
 	"github.com/duhruh/blog/app/blog/transport/http"
+	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	tacklehttp "github.com/duhruh/tackle/transport/http"
 
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 
 	"github.com/duhruh/blog/app/blog/repository"
+	"github.com/duhruh/blog/app/blog/transport/grpc"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 )
 
 type App struct {
 	service       Service
 	httpTransport tacklehttp.HttpTransport
+	grpcTransport tacklegrpc.GrpcTransport
 }
 
 func (h App) Service() Service                        { return h.service }
 func (h App) HttpTransport() tacklehttp.HttpTransport { return h.httpTransport }
+func (h App) GrpcTransport() tacklegrpc.GrpcTransport { return h.grpcTransport }
 
 func NewImplementedService(cxt context.Context, logger log.Logger) App {
 	fieldKeys := []string{"method"}
@@ -50,10 +54,13 @@ func NewImplementedService(cxt context.Context, logger log.Logger) App {
 	)
 
 	endpointFactory := newEndpointFactory(service)
+
 	httpTransport := http.NewHttpTransport(endpointFactory, log.With(logger, "component", "http"))
+	grpcTransport := grpc.NewGrpcTransport(endpointFactory, log.With(logger, "component", "grpc"))
 
 	return App{
 		service:       service,
 		httpTransport: httpTransport,
+		grpcTransport: grpcTransport,
 	}
 }
