@@ -40,25 +40,30 @@ func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport, wg *sync
 
 	wg.Add(3)
 	errs := make(chan error, 2)
-	go func() {
-		defer wg.Done()
-		gt.logger.Log("transport", "grpc", "addr", gt.addr, "msg", "listening")
-		errs <- baseServer.Serve(grpcListener)
-	}()
-	go func() {
-		defer wg.Done()
-		c := make(chan os.Signal)
-		signal.Notify(c, syscall.SIGINT)
-		errs <- fmt.Errorf("%s", <-c)
-		err := grpcListener.Close()
-		if err != nil {
-			panic(err)
-		}
-	}()
+	go gt.listen(baseServer, grpcListener, errs, wg)
+	go gt.osSignals(grpcListener, errs, wg)
+	go gt.serverClose(errs, wg)
 
-	go func() {
-		defer wg.Done()
-		gt.logger.Log("terminated", <-errs)
-	}()
+}
 
+func (gt appGrpcTransport) listen(baseServer *grpc.Server, grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+	gt.logger.Log("transport", "grpc", "addr", gt.addr, "msg", "listening")
+	errs <- baseServer.Serve(grpcListener)
+}
+
+func (gt appGrpcTransport) osSignals(grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+	c := make(chan os.Signal)
+	signal.Notify(c, syscall.SIGINT)
+	errs <- fmt.Errorf("%s", <-c)
+	err := grpcListener.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (gt appGrpcTransport) serverClose(errs chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+	gt.logger.Log("terminated", <-errs)
 }

@@ -33,30 +33,36 @@ func (ht appHttpTransport) Mount(transports []http2.HttpTransport, wg *sync.Wait
 		transport.NewHandler(mux)
 	}
 
-	http.Handle("/", accessControl(mux))
+	http.Handle("/", ht.accessControl(mux))
 	http.Handle("/metrics", promhttp.Handler())
 
 	errs := make(chan error, 2)
 
 	wg.Add(3)
-	go func() {
-		defer wg.Done()
-		ht.logger.Log("transport", "http", "address", ht.addr, "msg", "listening")
-		errs <- http.ListenAndServe(ht.addr, nil)
-	}()
-	go func() {
-		defer wg.Done()
-		c := make(chan os.Signal)
-		signal.Notify(c, syscall.SIGINT)
-		errs <- fmt.Errorf("%s", <-c)
-	}()
-	go func() {
-		defer wg.Done()
-		ht.logger.Log("terminated", <-errs)
-	}()
+	go ht.listen(errs, wg)
+	go ht.osSignals(errs, wg)
+	go ht.serverClose(errs, wg)
 }
 
-func accessControl(h http.Handler) http.Handler {
+func (ht appHttpTransport) listen(errs chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+	ht.logger.Log("transport", "http", "address", ht.addr, "msg", "listening")
+	errs <- http.ListenAndServe(ht.addr, nil)
+}
+
+func (ht appHttpTransport) osSignals(errs chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+	c := make(chan os.Signal)
+	signal.Notify(c, syscall.SIGINT)
+	errs <- fmt.Errorf("%s", <-c)
+}
+
+func (ht appHttpTransport) serverClose(errs chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+	ht.logger.Log("terminated", <-errs)
+}
+
+func (ht appHttpTransport) accessControl(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")

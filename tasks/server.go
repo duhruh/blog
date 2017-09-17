@@ -55,6 +55,7 @@ func (t ServerTask) Run(w io.Writer) {
 			t.ldflag(cfgPkg, "BuildTime", buildTime),
 		"cmd/api/main.go",
 		"-http-bind-address=:8080",
+		"-grpc-bind-address=:8081",
 	)
 	cmd.Env = os.Environ()
 	cmd.Stdin = os.Stdin
