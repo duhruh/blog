@@ -10,10 +10,11 @@ import (
 	http2 "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"sync"
 )
 
 type HttpTransport interface {
-	Mount(transports []http2.HttpTransport)
+	Mount(transports []http2.HttpTransport, wg *sync.WaitGroup)
 }
 
 type appHttpTransport struct {
@@ -25,7 +26,7 @@ func NewHttpTransport(l log.Logger, addr string) HttpTransport {
 	return appHttpTransport{logger: l, addr: addr}
 }
 
-func (ht appHttpTransport) Mount(transports []http2.HttpTransport) {
+func (ht appHttpTransport) Mount(transports []http2.HttpTransport, wg *sync.WaitGroup) {
 	mux := http.NewServeMux()
 
 	for _, transport := range transports {
@@ -36,17 +37,21 @@ func (ht appHttpTransport) Mount(transports []http2.HttpTransport) {
 	http.Handle("/metrics", promhttp.Handler())
 
 	errs := make(chan error, 2)
+
+	wg.Add(3)
 	go func() {
+		defer wg.Done()
 		ht.logger.Log("transport", "http", "address", ht.addr, "msg", "listening")
 		errs <- http.ListenAndServe(ht.addr, nil)
 	}()
 	go func() {
+		defer wg.Done()
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT)
 		errs <- fmt.Errorf("%s", <-c)
 	}()
-
 	go func() {
+		defer wg.Done()
 		ht.logger.Log("terminated", <-errs)
 	}()
 }

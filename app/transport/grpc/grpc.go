@@ -8,11 +8,12 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
 type GrpcTransport interface {
-	Mount(transports []tacklegrpc.GrpcTransport)
+	Mount(transports []tacklegrpc.GrpcTransport, wg *sync.WaitGroup)
 }
 
 type appGrpcTransport struct {
@@ -24,7 +25,7 @@ func NewGrpcTransport(l log.Logger, addr string) GrpcTransport {
 	return appGrpcTransport{logger: l, addr: addr}
 }
 
-func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport) {
+func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport, wg *sync.WaitGroup) {
 	baseServer := grpc.NewServer()
 
 	grpcListener, err := net.Listen("tcp", gt.addr)
@@ -37,19 +38,26 @@ func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport) {
 		transport.NewHandler(baseServer)
 	}
 
+	wg.Add(3)
 	errs := make(chan error, 2)
 	go func() {
+		defer wg.Done()
 		gt.logger.Log("transport", "grpc", "addr", gt.addr, "msg", "listening")
 		errs <- baseServer.Serve(grpcListener)
 	}()
-	func() {
+	go func() {
+		defer wg.Done()
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT)
 		errs <- fmt.Errorf("%s", <-c)
-		grpcListener.Close()
+		err := grpcListener.Close()
+		if err != nil {
+			panic(err)
+		}
 	}()
 
 	go func() {
+		defer wg.Done()
 		gt.logger.Log("terminated", <-errs)
 	}()
 

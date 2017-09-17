@@ -11,6 +11,7 @@ import (
 	"github.com/duhruh/tackle/transport/grpc"
 	"github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
+	"sync"
 )
 
 type application struct {
@@ -24,7 +25,6 @@ func NewApplication(cxt context.Context, config Config, logger log.Logger) tackl
 }
 
 func (a application) Start() {
-
 	var blogApp blog.App
 	blogApp = blog.NewImplementedService(a.context, a.logger)
 
@@ -38,7 +38,12 @@ func (a application) Start() {
 
 	grpcTransport := appgrpc.NewGrpcTransport(a.logger, a.config.GetGRPCBindAddress())
 
-	httpTransport.Mount(httpTransports)
+	var wg sync.WaitGroup
 
-	grpcTransport.Mount(grpcTransports)
+	httpTransport.Mount(httpTransports, &wg)
+
+	grpcTransport.Mount(grpcTransports, &wg)
+
+	wg.Wait()
+	a.logger.Log("message", "application halting")
 }
