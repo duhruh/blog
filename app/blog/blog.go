@@ -24,11 +24,14 @@ func (h App) HttpTransport() tacklehttp.HttpTransport { return h.httpTransport }
 func NewImplementedService(cxt context.Context, logger log.Logger) App {
 	fieldKeys := []string{"method"}
 
-	var repo repository.BlogRepository
-	repo = repository.NewBlogRepository()
+	var blogRepo repository.BlogRepository
+	blogRepo = repository.NewBlogRepository()
+
+	var postRepo repository.PostRepository
+	postRepo = repository.NewPostRepository()
 
 	var service Service
-	service = newService(repo)
+	service = newService(blogRepo, postRepo)
 	service = newLoggingService(log.With(logger, "component", "blog"), service)
 	service = newInstrumentingService(
 		kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{

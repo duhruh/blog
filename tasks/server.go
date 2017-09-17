@@ -6,6 +6,7 @@ import (
 	"github.com/duhruh/tackle/task"
 	"os"
 	"os/exec"
+	"time"
 )
 
 type ServerTask struct {
@@ -35,12 +36,22 @@ func (t ServerTask) Options() []task.Option     { return t.options }
 func (t ServerTask) Arguments() []task.Argument { return t.arguments }
 
 func (t ServerTask) Run(w io.Writer) {
-	exec.Command("git rev-parse ")
+	var (
+		gitCommit   = "ec71764"
+		buildNumber = "1"
+		version     = "v1.0.0"
+		buildTime   = time.Now().UTC().Format(time.RFC3339Nano)
+		cfgPkg      = "github.com/duhruh/blog/config"
+	)
+
 	cmd := exec.Command(
 		"go",
 		"run",
 		"-ldflags",
-		"-X \"github.com/duhruh/blog/config.GitCommit=82847ca\" -X \"github.com/duhruh/blog/config.Version=v1.0.0\" -X \"github.com/duhruh/scaffold/config.BuildTime=Sat, Sep  9, 2017  8:01:22 PM\"",
+		""+t.ldflag(cfgPkg, "GitCommit", gitCommit)+" "+
+			t.ldflag(cfgPkg, "BuildNumber", buildNumber)+" "+
+			t.ldflag(cfgPkg, "Version", version)+" "+
+			t.ldflag(cfgPkg, "BuildTime", buildTime),
 		"cmd/api/main.go",
 		"-http-bind-address=:8081",
 	)
@@ -53,4 +64,8 @@ func (t ServerTask) Run(w io.Writer) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (t ServerTask) ldflag(pkg string, variable string, value string) string {
+	return "-X \"" + pkg + "." + variable + "=" + value + "\""
 }

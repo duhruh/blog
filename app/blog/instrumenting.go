@@ -31,12 +31,12 @@ func (s *instrumentingService) ShowBlog(id domain.Identity) (blog entity.Blog, e
 	return s.Service.ShowBlog(id)
 }
 
-func (s *instrumentingService) AllBlogs() (bs []entity.Blog, err error) {
+func (s *instrumentingService) ListBlogs() (bs []entity.Blog, err error) {
 	defer func(begin time.Time) {
-		s.requestCount.With("method", "AllBlogs").Add(1)
-		s.requestLatency.With("method", "AllBlogs").Observe(time.Since(begin).Seconds())
+		s.requestCount.With("method", "ListBlogs").Add(1)
+		s.requestLatency.With("method", "ListBlogs").Observe(time.Since(begin).Seconds())
 	}(time.Now())
-	return s.Service.AllBlogs()
+	return s.Service.ListBlogs()
 }
 
 func (s *instrumentingService) CreateBlog(name string) (bs entity.Blog, err error) {
@@ -45,4 +45,29 @@ func (s *instrumentingService) CreateBlog(name string) (bs entity.Blog, err erro
 		s.requestLatency.With("method", "CreateBlog").Observe(time.Since(begin).Seconds())
 	}(time.Now())
 	return s.Service.CreateBlog(name)
+}
+
+func (s *instrumentingService) ShowPost(id domain.Identity) (post entity.Post, err error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "ShowPost").Add(1)
+		s.requestLatency.With("method", "ShowPost").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.ShowPost(id)
+}
+
+func (s *instrumentingService) ListPosts(blog entity.Blog) (p []entity.Post, err error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "ListPosts").Add(1)
+		s.requestLatency.With("method", "ListPosts").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+	return s.Service.ListPosts(blog)
+}
+
+func (s *instrumentingService) CreatePost(blog entity.Blog, body string) (p entity.Post, err error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "CreatePost").Add(1)
+		s.requestLatency.With("method", "CreatePost").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+	return s.Service.CreatePost(blog, body)
 }

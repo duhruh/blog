@@ -18,29 +18,29 @@ type blog struct {
 }
 
 func NewBlog() Blog {
-	return blog{}
+	return &blog{}
 }
 
-func (b blog) Identity() domain.Identity {
+func (b *blog) Identity() domain.Identity {
 	return b.id
 }
 
-func (b blog) SetIdentity(id domain.Identity) {
+func (b *blog) SetIdentity(id domain.Identity) {
 	b.id = id
 }
 
-func (b blog) Posts() []Post {
+func (b *blog) Posts() []Post {
 	return b.posts
 }
 
-func (b blog) AddPost(post Post) {
+func (b *blog) AddPost(post Post) {
 	b.posts = append(b.posts, post)
 }
 
-func (b blog) Name() string {
+func (b *blog) Name() string {
 	return b.name
 }
 
-func (b blog) SetName(name string) {
+func (b *blog) SetName(name string) {
 	b.name = name
 }

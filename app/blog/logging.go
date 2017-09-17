@@ -29,15 +29,15 @@ func (s *loggingService) ShowBlog(id domain.Identity) (blog entity.Blog, err err
 	return s.Service.ShowBlog(id)
 }
 
-func (s *loggingService) AllBlogs() (bs []entity.Blog, err error) {
+func (s *loggingService) ListBlogs() (bs []entity.Blog, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
-			"method", "AllBlogs",
+			"method", "ListBlogs",
 			"took", time.Since(begin),
 			"err", err,
 		)
 	}(time.Now())
-	return s.Service.AllBlogs()
+	return s.Service.ListBlogs()
 }
 
 func (s *loggingService) CreateBlog(name string) (bs entity.Blog, err error) {
@@ -50,4 +50,41 @@ func (s *loggingService) CreateBlog(name string) (bs entity.Blog, err error) {
 		)
 	}(time.Now())
 	return s.Service.CreateBlog(name)
+}
+
+func (s *loggingService) ShowPost(id domain.Identity) (post entity.Post, err error) {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "ShowPost",
+			"id", id.Identity(),
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.ShowPost(id)
+}
+
+func (s *loggingService) ListPosts(blog entity.Blog) (bs []entity.Post, err error) {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "ListPosts",
+			"blog", blog.Identity().Identity(),
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.ListPosts(blog)
+}
+
+func (s *loggingService) CreatePost(blog entity.Blog, body string) (bs entity.Post, err error) {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "CreatePost",
+			"blog", blog.Identity().Identity(),
+			"body", body,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.CreatePost(blog, body)
 }

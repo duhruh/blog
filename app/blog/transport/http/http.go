@@ -18,6 +18,53 @@ type httpTransport struct {
 	logger          log.Logger
 }
 
+var uuidRegex = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
+
+var routes = []struct {
+	Method   string
+	Path     string
+	Endpoint string
+	Encoder  string
+}{
+	{
+		"GET",
+		"/blogs",
+		"ListBlogsEndpoint",
+		"ListBlogsEncoder",
+	},
+	{
+		"POST",
+		"/blogs",
+		"CreateBlogEndpoint",
+		"CreateBlogEncoder",
+	},
+	{
+		"GET",
+		"/blogs/{id:" + uuidRegex + "}",
+		"ShowBlogEndpoint",
+		"ShowBlogEncoder",
+	},
+
+	{
+		"GET",
+		"/blogs/{id:" + uuidRegex + "}/posts",
+		"ListPostsEndpoint",
+		"ListPostsEncoder",
+	},
+	{
+		"POST",
+		"/blogs/{id:" + uuidRegex + "}/posts",
+		"CreatePostEndpoint",
+		"CreatePostEncoder",
+	},
+	{
+		"GET",
+		"/posts/{id:" + uuidRegex + "}",
+		"ShowPostEndpoint",
+		"ShowPostEncoder",
+	},
+}
+
 func NewHttpTransport(endpointFactory tackle.EndpointFactory, logger log.Logger) tacklehttp.HttpTransport {
 	return httpTransport{
 		encoderFactory:  NewEncoderFactory(),
@@ -34,30 +81,22 @@ func (h httpTransport) NewHandler(handler *http.ServeMux) http.Handler {
 		kithttp.ServerErrorLogger(h.logger),
 	}
 
-	allBlogsEndpoint, _ := h.endpointFactory.Generate("AllBlogsEndpoint")
-	allBlogsEncoder, _ := h.encoderFactory.Generate("AllBlogsEncoder")
-	router.Handle("/blogs", tacklehttp.NewServer(
-		allBlogsEndpoint,
-		allBlogsEncoder,
-		options,
-	)).Methods("GET")
+	for _, route := range routes {
+		endpoint, err := h.endpointFactory.Generate(route.Endpoint)
+		if err != nil {
+			panic(err)
+		}
+		encoder, err := h.encoderFactory.Generate(route.Encoder)
+		if err != nil {
+			panic(err)
+		}
 
-	createBlogEndpoint, _ := h.endpointFactory.Generate("CreateBlogEndpoint")
-	createBlogEncoder, _ := h.encoderFactory.Generate("CreateBlogEncoder")
-	router.Handle("/blogs", tacklehttp.NewServer(
-		createBlogEndpoint,
-		createBlogEncoder,
-		options,
-	)).Methods("POST")
-
-	showBlogEndpoint, _ := h.endpointFactory.Generate("ShowBlogEndpoint")
-	showBlogEncoder, _ := h.encoderFactory.Generate("ShowBlogEncoder")
-	router.Handle("/blogs/{id:[0-9]+}", tacklehttp.NewServer(
-		showBlogEndpoint,
-		showBlogEncoder,
-		options,
-	)).Methods("GET")
-
+		router.Handle(route.Path, tacklehttp.NewServer(
+			endpoint,
+			encoder,
+			options,
+		)).Methods(route.Method)
+	}
 	handler.Handle("/", router)
 	return handler
 }

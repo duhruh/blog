@@ -17,6 +17,7 @@ type blogRepository struct {
 var blogs map[string]entity.Blog
 
 func NewBlogRepository() BlogRepository {
+	blogs = make(map[string]entity.Blog)
 	return blogRepository{}
 }
 
