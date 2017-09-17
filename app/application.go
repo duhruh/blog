@@ -2,10 +2,12 @@ package app
 
 import (
 	"context"
+
 	"github.com/duhruh/blog/app/blog"
-	http3 "github.com/duhruh/blog/app/transport/http"
+	apphttp "github.com/duhruh/blog/app/transport/http"
+
 	"github.com/duhruh/tackle"
-	http2 "github.com/duhruh/tackle/transport/http"
+	"github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 )
 
@@ -24,10 +26,10 @@ func (a application) Start() {
 	var blogApp blog.App
 	blogApp = blog.NewImplementedService(a.context, a.logger)
 
-	var transports []http2.HttpTransport
+	var transports []http.HttpTransport
 	transports = append(transports, blogApp.HttpTransport())
 
-	httpTransport := http3.NewHttpTransport(a.logger, a.config.GetHTTPBindAddress())
+	httpTransport := apphttp.NewHttpTransport(a.logger, a.config.GetHTTPBindAddress())
 
 	httpTransport.Mount(transports)
 }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package proto;
 
-service Blog {
+service BlogService {
     rpc ListBlogs (ListBlogsRequest) returns (ListBlogsResponse) {}
 
 }
@@ -10,7 +10,12 @@ service Blog {
 message ListBlogsRequest {}
 
 message ListBlogsResponse {
+    repeated Blog blogs = 1;
+}
+
+
+
+message Blog {
     string id = 1;
     string name = 2;
 }
-

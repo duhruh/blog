@@ -12,6 +12,7 @@ func main() {
 
 	runner.Register(tasks.NewServerTask())
 	runner.Register(tasks.NewGenerateServiceTask())
+	runner.Register(tasks.NewGenerateProtoBlogTask())
 
 	runner.Run(os.Args)
 }

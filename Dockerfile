@@ -1,5 +1,9 @@
 FROM golang:1.8
 
+ENV APP_PKG_PATH=/go/src/github.com/duhruh/blog
+
+RUN curl https://glide.sh/get | sh
+
 RUN apt-get update -y && apt-get install -y zip unzip git autoconf automake libtool
 
 RUN cd /opt && \
@@ -10,12 +14,17 @@ RUN cd /opt && \
     make && \
     make install
 
-RUN go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+#RUN go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
 
-RUN curl https://glide.sh/get | sh
+RUN mkdir -p $APP_PKG_PATH
 
-WORKDIR /go/src/github.com/duhruh/blog
+WORKDIR $APP_PKG_PATH
 
-COPY . .
+ADD glide.yaml $APP_PKG_PATH
+ADD glide.lock $APP_PKG_PATH
 
 RUN glide install
+
+ADD . $APP_PKG_PATH
+
+
