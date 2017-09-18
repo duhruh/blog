@@ -18,59 +18,6 @@ type httpTransport struct {
 	logger          log.Logger
 }
 
-var uuidRegex = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
-
-var routes = []struct {
-	Method   string
-	Path     string
-	Endpoint string
-	Encoder  string
-}{
-	{
-		"GET",
-		"/blogs",
-		"ListBlogsEndpoint",
-		"ListBlogsEncoder",
-	},
-	{
-		"POST",
-		"/blogs",
-		"CreateBlogEndpoint",
-		"CreateBlogEncoder",
-	},
-	{
-		"PUT",
-		"/blogs/{id:" + uuidRegex + "}",
-		"UpdateBlogEndpoint",
-		"UpdateBlogEncoder",
-	},
-	{
-		"GET",
-		"/blogs/{id:" + uuidRegex + "}",
-		"ShowBlogEndpoint",
-		"ShowBlogEncoder",
-	},
-
-	{
-		"GET",
-		"/blogs/{id:" + uuidRegex + "}/posts",
-		"ListPostsEndpoint",
-		"ListPostsEncoder",
-	},
-	{
-		"POST",
-		"/blogs/{id:" + uuidRegex + "}/posts",
-		"CreatePostEndpoint",
-		"CreatePostEncoder",
-	},
-	{
-		"GET",
-		"/posts/{id:" + uuidRegex + "}",
-		"ShowPostEndpoint",
-		"ShowPostEncoder",
-	},
-}
-
 func NewHttpTransport(endpointFactory tackle.EndpointFactory, logger log.Logger) tacklehttp.HttpTransport {
 	return httpTransport{
 		encoderFactory:  NewEncoderFactory(),
@@ -80,6 +27,7 @@ func NewHttpTransport(endpointFactory tackle.EndpointFactory, logger log.Logger)
 }
 
 func (h httpTransport) NewHandler(handler *http.ServeMux) http.Handler {
+	routes := getRoutes()
 	router := mux.NewRouter()
 
 	options := []kithttp.ServerOption{
