@@ -263,6 +263,48 @@ func (hs encoderFactory) listPostsResponse() kithttp.EncodeResponseFunc {
 	})
 }
 
+func (hs encoderFactory) UpdateBlogEncoder() tacklehttp.Encoder {
+	return tacklehttp.NewEncoder(hs.updateBlogRequest(), hs.updateBlogResponse())
+}
+
+func (hs encoderFactory) updateBlogRequest() kithttp.DecodeRequestFunc {
+	return kithttp.DecodeRequestFunc(func(_ context.Context, r *http.Request) (interface{}, error) {
+		vars := mux.Vars(r)
+		packet := tackle.NewPacket()
+		packet.Put("id", vars["id"])
+
+		packet.Put("name", r.FormValue("name"))
+
+		return packet, nil
+	})
+}
+
+func (hs encoderFactory) updateBlogResponse() kithttp.EncodeResponseFunc {
+	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+		//data := response.(tackle.Packet)
+		//err := hs.errorFromResponse(data)
+		//if err != nil {
+		//	hs.ErrorEncoder()(ctx, err, w)
+		//	return nil
+		//}
+
+		//var blogs []entity.Blog
+
+		blog := response.(entity.Blog)
+
+		bjson := struct {
+			Id   string `json:"id"`
+			Name string `json:"name"`
+		}{
+			Id:   blog.Identity().Identity().(string),
+			Name: blog.Name(),
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		return json.NewEncoder(w).Encode(bjson)
+	})
+}
+
 func (hs encoderFactory) ErrorEncoder() kithttp.ErrorEncoder {
 	return kithttp.ErrorEncoder(func(_ context.Context, err error, w http.ResponseWriter) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

@@ -71,3 +71,11 @@ func (s *instrumentingService) CreatePost(blog entity.Blog, body string) (p enti
 	}(time.Now())
 	return s.Service.CreatePost(blog, body)
 }
+
+func (s *instrumentingService) UpdateBlog(blog entity.Blog) (_ entity.Blog, err error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "UpdateBlog").Add(1)
+		s.requestLatency.With("method", "UpdateBlog").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+	return s.Service.UpdateBlog(blog)
+}

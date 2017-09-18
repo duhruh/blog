@@ -88,3 +88,16 @@ func (s *loggingService) CreatePost(blog entity.Blog, body string) (bs entity.Po
 	}(time.Now())
 	return s.Service.CreatePost(blog, body)
 }
+
+func (s *loggingService) UpdateBlog(blog entity.Blog) (_ entity.Blog, err error) {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "UpdateBlog",
+			"blog", blog.Identity().Identity(),
+			"name", blog.Name(),
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.UpdateBlog(blog)
+}

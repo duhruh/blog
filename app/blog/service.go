@@ -14,6 +14,7 @@ type Service interface {
 	ShowBlog(id domain.Identity) (entity.Blog, error)
 	ListBlogs() ([]entity.Blog, error)
 	CreateBlog(name string) (entity.Blog, error)
+	UpdateBlog(blog entity.Blog) (entity.Blog, error)
 
 	ShowPost(id domain.Identity) (entity.Post, error)
 	ListPosts(blog entity.Blog) ([]entity.Post, error)
@@ -55,6 +56,10 @@ func (s service) CreateBlog(name string) (entity.Blog, error) {
 	blog.SetIdentity(entity.NextIdentity())
 
 	return s.blogRepository.Create(blog), nil
+}
+
+func (s service) UpdateBlog(blog entity.Blog) (entity.Blog, error) {
+	return s.blogRepository.Update(blog)
 }
 
 func (s service) ShowPost(id domain.Identity) (entity.Post, error) {

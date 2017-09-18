@@ -39,6 +39,12 @@ var routes = []struct {
 		"CreateBlogEncoder",
 	},
 	{
+		"PUT",
+		"/blogs/{id:" + uuidRegex + "}",
+		"UpdateBlogEndpoint",
+		"UpdateBlogEncoder",
+	},
+	{
 		"GET",
 		"/blogs/{id:" + uuidRegex + "}",
 		"ShowBlogEndpoint",

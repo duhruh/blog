@@ -89,3 +89,15 @@ func (ef endpointFactory) CreatePostEndpoint() endpoint.Endpoint {
 		return r, err
 	}
 }
+
+func (ef endpointFactory) UpdateBlogEndpoint() endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		packet := request.(tackle.Packet)
+		bid := packet.Get("id")
+		blog := entity.NewBlog()
+		blog.SetIdentity(domain.NewIdentity(bid))
+		blog.SetName(packet.Get("name").(string))
+
+		return ef.service.UpdateBlog(blog)
+	}
+}
