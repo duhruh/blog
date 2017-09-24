@@ -7,6 +7,7 @@ import:
   - task
   - transport/grpc
   - transport/http
+  - dsnotify
 - package: github.com/go-kit/kit
   version: ^0.5.0
   subpackages:
@@ -34,3 +35,4 @@ import:
 - package: google.golang.org/grpc
   version: 1.5.2
 - package: github.com/fsnotify/fsnotify
+- package: github.com/fatih/color

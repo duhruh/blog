@@ -12,9 +12,9 @@ import (
 
 type grpcTransport struct {
 	logger          log.Logger
-	listBlogs       kitgrpc.Handler
 	endpointFactory tackle.EndpointFactory
 	encoderFactory  tacklegrpc.EncoderFactory
+	handlers        map[string]kitgrpc.Handler
 }
 
 func NewGrpcTransport(endpointFactory tackle.EndpointFactory, logger log.Logger) tacklegrpc.GrpcTransport {
@@ -22,6 +22,7 @@ func NewGrpcTransport(endpointFactory tackle.EndpointFactory, logger log.Logger)
 		logger:          logger,
 		endpointFactory: endpointFactory,
 		encoderFactory:  NewEncoderFactory(),
+		handlers:        make(map[string]kitgrpc.Handler),
 	}
 
 }
@@ -30,17 +31,22 @@ func (gt grpcTransport) NewHandler(g *grpc.Server) {
 		kitgrpc.ServerErrorLogger(gt.logger),
 	}
 
-	ef, _ := gt.endpointFactory.Generate("ListBlogsEndpoint")
-	ec, _ := gt.encoderFactory.Generate("ListBlogEncoder")
+	for _, handler := range gt.Handlers() {
+		ef, _ := gt.endpointFactory.Generate(handler.Endpoint())
+		ec, _ := gt.encoderFactory.Generate(handler.Encoder())
 
-	gt.listBlogs = tacklegrpc.NewServer(ef, ec, options)
+		gt.handlers[handler.Name()] = tacklegrpc.NewServer(ef, ec, options)
+	}
 
 	proto.RegisterBlogServiceServer(g, gt)
+}
 
+func (gt grpcTransport) Handlers() []tacklegrpc.Handler {
+	return getHandlers()
 }
 
 func (gt grpcTransport) ListBlogs(ctx context.Context, req *proto.ListBlogsRequest) (*proto.ListBlogsResponse, error) {
-	_, rep, err := gt.listBlogs.ServeGRPC(ctx, req)
+	_, rep, err := gt.handlers["BlogService.listBlogs"].ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}

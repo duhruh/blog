@@ -1,18 +1,20 @@
-hash: 035016f1505c3f554310dbca2e2e98998346bb3765a57deb43116cd4db48f591
-updated: 2017-09-23T21:26:20.0785857Z
+hash: f5db68fe2441fc0e01c52ac31840952024c17660348e07fbb7eb512bef78134c
+updated: 2017-09-24T16:47:42.9362438Z
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
 - name: github.com/duhruh/tackle
-  version: 248d2690132aeefbef39e156df6b341a769cfbe6
+  version: dd1d9a21db7c4c89d9de8f2a388c353ee60a0cc7
   subpackages:
   - domain
   - dsnotify
   - task
   - transport/grpc
   - transport/http
+- name: github.com/fatih/color
+  version: 1535ebc2637cc042c938f07fa26c6356ab8f8504
 - name: github.com/fsnotify/fsnotify
   version: 4da3e2cfbabc9f751898f250b49f2439785783a1
 - name: github.com/go-kit/kit

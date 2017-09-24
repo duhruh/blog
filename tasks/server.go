@@ -24,6 +24,8 @@ type ServerTask struct {
 	arguments        []task.Argument
 
 	currentCommand *exec.Cmd
+	writer         io.Writer
+	outBinName     string
 }
 
 func NewServerTask() task.Task {
@@ -46,59 +48,77 @@ func (t *ServerTask) Options() []task.Option     { return t.options }
 func (t *ServerTask) Arguments() []task.Argument { return t.arguments }
 
 func (t *ServerTask) Run(w io.Writer) {
+	t.writer = w
+
+	t.outBinName = fmt.Sprintf("/tmp/go-bin-%s", time.Now().String())
+
+	t.Say(w, "\nWelcome to Tackle v1.0.0\n")
 
 	option, _ := t.GetOption(t.options, "watch")
 	if option.Value() == nil {
-		t.build()
+		t.compileAndRun()
 		t.currentCommand.Wait()
 	}
 
-	ww, _ := dsnotify.NewDirectoryWatcher()
+	directoryWatcher, err := dsnotify.NewDirectoryWatcher()
+	if err != nil {
+		panic(err)
+	}
 
-	ww.IgnoreRegex(regexp.MustCompile(`^.glide`))
-	ww.IgnoreRegex(regexp.MustCompile(`^.git`))
-	ww.AddDirectory("./")
-	ww.RegisterFileRegex(regexp.MustCompile(`(.+\.go)`))
+	directoryWatcher.IgnoreRegex(regexp.MustCompile(`^.glide`))
+	directoryWatcher.IgnoreRegex(regexp.MustCompile(`^.git`))
+	directoryWatcher.AddDirectory("./")
+	directoryWatcher.RegisterFileRegex(regexp.MustCompile(`(.+\.go)`))
 
-	defer ww.FsWatcher().Close()
+	defer directoryWatcher.Close()
 
-	go t.build()
+	go t.compileAndRun()
 
-	ww.Watch(dsnotify.DirectoryFunc(func(e *fsnotify.Event, err error) {
-
-		if err != nil {
-			t.Say(w, err.Error())
-		}
-
-		if t.currentCommand != nil {
-			err := t.currentCommand.Process.Kill()
-			if err != nil {
-				t.Say(w, err.Error())
-			}
-			t.currentCommand.Wait()
-
-		}
-
-		t.Say(w, "rebuild...")
-		t.build()
-	}))
+	directoryWatcher.Watch(dsnotify.DirectoryFunc(t.fileChangeEvent))
 }
 
-func (t *ServerTask) build() {
+func (t *ServerTask) fileChangeEvent(e *fsnotify.Event, err error) {
+	if err != nil {
+		t.Say(t.writer, err.Error())
+	}
+
+	if t.currentCommand != nil {
+		t.Say(t.writer, "") // newline
+		t.kill()
+	}
+
+	t.compileAndRun()
+}
+
+func (t *ServerTask) kill() {
+	defer func(begin time.Time) {
+		t.Say(t.writer, fmt.Sprintf("time to kill process: %v", time.Since(begin)))
+	}(time.Now())
+
+	err := t.currentCommand.Process.Kill()
+	if err != nil {
+		t.Say(t.writer, err.Error())
+	}
+	t.currentCommand.Wait()
+}
+
+func (t *ServerTask) compile() {
+	defer func(begin time.Time) {
+		t.Say(t.writer, fmt.Sprintf("time to compile: %v", time.Since(begin)))
+	}(time.Now())
 	var (
 		gitCommit, _ = exec.Command("git", "rev-parse", "--short", "HEAD").Output()
 		buildNumber  = "1"
 		version      = "v1.0.0"
 		buildTime    = time.Now().UTC().Format(time.RFC3339Nano)
 		cfgPkg       = "github.com/duhruh/blog/config"
-		bin          = fmt.Sprintf("/tmp/go-bin-%s", time.Now().String())
 	)
 
 	cmd := exec.Command(
 		"go",
 		"build",
 		"-o",
-		bin,
+		t.outBinName,
 		"-ldflags",
 		""+t.ldflag(cfgPkg, "GitCommit", strings.Trim(string(gitCommit), "\n"))+" "+
 			t.ldflag(cfgPkg, "BuildNumber", buildNumber)+" "+
@@ -114,9 +134,12 @@ func (t *ServerTask) build() {
 	if err != nil {
 		panic(err)
 	}
+}
 
+func (t *ServerTask) run() {
+	t.Say(t.writer, "") // newline
 	t.currentCommand = exec.Command(
-		bin,
+		t.outBinName,
 		"-http-bind-address=:8080",
 		"-grpc-bind-address=:8081",
 	)
@@ -124,11 +147,16 @@ func (t *ServerTask) build() {
 	t.currentCommand.Stdin = os.Stdin
 	t.currentCommand.Stdout = os.Stdout
 	t.currentCommand.Stderr = os.Stderr
-	err = t.currentCommand.Start()
+	err := t.currentCommand.Start()
 
 	if err != nil {
 		println(err.Error())
 	}
+}
+
+func (t *ServerTask) compileAndRun() {
+	t.compile()
+	t.run()
 }
 
 func (t *ServerTask) ldflag(pkg string, variable string, value string) string {

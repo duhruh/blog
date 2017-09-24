@@ -21,7 +21,7 @@ func (ef encoderFactory) Generate(e string) (tacklegrpc.Encoder, error) {
 	return ef.GenerateWithInstance(ef, e)
 }
 
-func (hs encoderFactory) ListBlogEncoder() tacklegrpc.Encoder {
+func (hs encoderFactory) ListBlogsEncoder() tacklegrpc.Encoder {
 	return tacklegrpc.NewEncoder(hs.listBlogsRequest(), hs.listBlogsResponse())
 }
 

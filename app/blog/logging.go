@@ -4,6 +4,7 @@ import (
 	"github.com/duhruh/blog/app/blog/entity"
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"time"
 )
 
@@ -19,7 +20,7 @@ func newLoggingService(logger log.Logger, s Service) Service {
 
 func (s *loggingService) ShowBlog(id domain.Identity) (blog entity.Blog, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "ShowBlog",
 			"id", id.Identity(),
 			"took", time.Since(begin),
@@ -31,7 +32,7 @@ func (s *loggingService) ShowBlog(id domain.Identity) (blog entity.Blog, err err
 
 func (s *loggingService) ListBlogs() (bs []entity.Blog, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "ListBlogs",
 			"took", time.Since(begin),
 			"err", err,
@@ -42,7 +43,7 @@ func (s *loggingService) ListBlogs() (bs []entity.Blog, err error) {
 
 func (s *loggingService) CreateBlog(name string) (bs entity.Blog, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "CreateBlog",
 			"name", name,
 			"took", time.Since(begin),
@@ -54,7 +55,7 @@ func (s *loggingService) CreateBlog(name string) (bs entity.Blog, err error) {
 
 func (s *loggingService) ShowPost(id domain.Identity) (post entity.Post, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "ShowPost",
 			"id", id.Identity(),
 			"took", time.Since(begin),
@@ -66,7 +67,7 @@ func (s *loggingService) ShowPost(id domain.Identity) (post entity.Post, err err
 
 func (s *loggingService) ListPosts(blog entity.Blog) (bs []entity.Post, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "ListPosts",
 			"blog", blog.Identity().Identity(),
 			"took", time.Since(begin),
@@ -78,7 +79,7 @@ func (s *loggingService) ListPosts(blog entity.Blog) (bs []entity.Post, err erro
 
 func (s *loggingService) CreatePost(blog entity.Blog, body string) (bs entity.Post, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "CreatePost",
 			"blog", blog.Identity().Identity(),
 			"body", body,
@@ -91,7 +92,7 @@ func (s *loggingService) CreatePost(blog entity.Blog, body string) (bs entity.Po
 
 func (s *loggingService) UpdateBlog(blog entity.Blog) (_ entity.Blog, err error) {
 	defer func(begin time.Time) {
-		s.logger.Log(
+		level.Info(s.logger).Log(
 			"method", "UpdateBlog",
 			"blog", blog.Identity().Identity(),
 			"name", blog.Name(),

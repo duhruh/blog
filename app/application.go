@@ -11,6 +11,7 @@ import (
 	"github.com/duhruh/tackle/transport/grpc"
 	"github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"sync"
 )
 
@@ -44,6 +45,7 @@ func (a application) Start() {
 
 	grpcTransport.Mount(grpcTransports, &wg)
 
+	level.Info(a.logger).Log("message", "application ready")
 	wg.Wait()
-	a.logger.Log("message", "application halting")
+	level.Info(a.logger).Log("message", "application halting")
 }

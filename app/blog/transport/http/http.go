@@ -27,7 +27,7 @@ func NewHttpTransport(endpointFactory tackle.EndpointFactory, logger log.Logger)
 }
 
 func (h httpTransport) NewHandler(handler *http.ServeMux) http.Handler {
-	routes := getRoutes()
+	routes := h.Routes()
 	router := mux.NewRouter()
 
 	options := []kithttp.ServerOption{
@@ -36,21 +36,25 @@ func (h httpTransport) NewHandler(handler *http.ServeMux) http.Handler {
 	}
 
 	for _, route := range routes {
-		endpoint, err := h.endpointFactory.Generate(route.Endpoint)
+		endpoint, err := h.endpointFactory.Generate(route.Endpoint())
 		if err != nil {
 			panic(err)
 		}
-		encoder, err := h.encoderFactory.Generate(route.Encoder)
+		encoder, err := h.encoderFactory.Generate(route.Encoder())
 		if err != nil {
 			panic(err)
 		}
 
-		router.Handle(route.Path, tacklehttp.NewServer(
+		router.Handle(route.Path(), tacklehttp.NewServer(
 			endpoint,
 			encoder,
 			options,
-		)).Methods(route.Method)
+		)).Methods(route.Method())
 	}
 	handler.Handle("/", router)
 	return handler
+}
+
+func (h httpTransport) Routes() []tacklehttp.Route {
+	return getRoutes()
 }
