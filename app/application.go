@@ -2,6 +2,8 @@ package app
 
 import (
 	"context"
+	"sync"
+	"time"
 
 	"github.com/duhruh/blog/app/blog"
 	appgrpc "github.com/duhruh/blog/app/transport/grpc"
@@ -12,8 +14,6 @@ import (
 	"github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"sync"
-	"time"
 )
 
 type application struct {

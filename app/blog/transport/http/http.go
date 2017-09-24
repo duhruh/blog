@@ -5,10 +5,8 @@ import (
 
 	"github.com/duhruh/tackle"
 	tacklehttp "github.com/duhruh/tackle/transport/http"
-
 	"github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
-
 	"github.com/gorilla/mux"
 )
 

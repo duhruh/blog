@@ -2,17 +2,17 @@ package http
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	tacklehttp "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net"
-	"sync"
 )
 
 type appHttpTransport struct {
@@ -29,9 +29,7 @@ func (ht *appHttpTransport) Build(transports []tacklehttp.HttpTransport) {
 	ht.transports = transports
 	mux := http.NewServeMux()
 
-	//buf := ht.serverStartMessage()
 	for _, transport := range ht.transports {
-		//ht.explainTransport(transport, &buf)
 		transport.NewHandler(mux)
 	}
 

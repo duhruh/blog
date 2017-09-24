@@ -1,13 +1,14 @@
 package app
 
 import (
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
+	"fmt"
 	"os"
 
-	"fmt"
 	cfg "github.com/duhruh/blog/config"
+
 	"github.com/fatih/color"
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 )
 
 // This is where we define our application logger

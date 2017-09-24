@@ -1,18 +1,17 @@
 package tasks
 
 import (
+	"fmt"
 	"io"
+	"os"
+	"os/exec"
+	"regexp"
+	"strings"
+	"time"
 
 	"github.com/duhruh/tackle/dsnotify"
 	"github.com/duhruh/tackle/task"
 	"github.com/fsnotify/fsnotify"
-	"os"
-	"os/exec"
-
-	"fmt"
-	"regexp"
-	"strings"
-	"time"
 )
 
 type ServerTask struct {

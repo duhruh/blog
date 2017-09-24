@@ -1,11 +1,13 @@
 package blog
 
 import (
+	"time"
+
 	"github.com/duhruh/blog/app/blog/entity"
+
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"time"
 )
 
 type loggingService struct {

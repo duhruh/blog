@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"io"
+	"os/exec"
 
 	"github.com/duhruh/tackle/task"
-	"os/exec"
 )
 
 type GenerateProtoBlogTask struct {

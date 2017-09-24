@@ -2,15 +2,16 @@ package grpc
 
 import (
 	"fmt"
-	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
-	"google.golang.org/grpc"
 	"net"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
+	"google.golang.org/grpc"
 )
 
 type appGrpcTransport struct {

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/duhruh/tackle"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"

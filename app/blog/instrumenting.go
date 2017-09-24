@@ -1,10 +1,12 @@
 package blog
 
 import (
+	"time"
+
 	"github.com/duhruh/blog/app/blog/entity"
+
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/metrics"
-	"time"
 )
 
 type instrumentingService struct {
