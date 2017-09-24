@@ -10,6 +10,7 @@ import (
 	http2 "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"net"
 	"sync"
 )
 
@@ -28,6 +29,10 @@ func NewHttpTransport(l log.Logger, addr string) HttpTransport {
 
 func (ht appHttpTransport) Mount(transports []http2.HttpTransport, wg *sync.WaitGroup) {
 	mux := http.NewServeMux()
+	listener, err := net.Listen("tcp", ht.addr)
+	if err != nil {
+		ht.logger.Log("transport", "http", "err", err)
+	}
 
 	for _, transport := range transports {
 		transport.NewHandler(mux)
@@ -39,22 +44,26 @@ func (ht appHttpTransport) Mount(transports []http2.HttpTransport, wg *sync.Wait
 	errs := make(chan error, 2)
 
 	wg.Add(3)
-	go ht.listen(errs, wg)
-	go ht.osSignals(errs, wg)
+	go ht.listen(errs, listener, wg)
+	go ht.osSignals(listener, errs, wg)
 	go ht.serverClose(errs, wg)
 }
 
-func (ht appHttpTransport) listen(errs chan error, wg *sync.WaitGroup) {
+func (ht appHttpTransport) listen(errs chan error, listener net.Listener, wg *sync.WaitGroup) {
 	defer wg.Done()
 	ht.logger.Log("transport", "http", "address", ht.addr, "msg", "listening")
-	errs <- http.ListenAndServe(ht.addr, nil)
+	errs <- http.Serve(listener, nil)
 }
 
-func (ht appHttpTransport) osSignals(errs chan error, wg *sync.WaitGroup) {
+func (ht appHttpTransport) osSignals(listener net.Listener, errs chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT)
 	errs <- fmt.Errorf("%s", <-c)
+	err := listener.Close()
+	if err != nil {
+		ht.logger.Log("terminated", <-errs)
+	}
 }
 
 func (ht appHttpTransport) serverClose(errs chan error, wg *sync.WaitGroup) {

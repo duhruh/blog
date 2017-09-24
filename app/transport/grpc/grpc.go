@@ -31,7 +31,6 @@ func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport, wg *sync
 	grpcListener, err := net.Listen("tcp", gt.addr)
 	if err != nil {
 		gt.logger.Log("transport", "grpc", "err", err)
-		panic(err)
 	}
 
 	for _, transport := range transports {
@@ -59,7 +58,7 @@ func (gt appGrpcTransport) osSignals(grpcListener net.Listener, errs chan error,
 	errs <- fmt.Errorf("%s", <-c)
 	err := grpcListener.Close()
 	if err != nil {
-		panic(err)
+		gt.logger.Log("terminated", <-errs)
 	}
 }
 

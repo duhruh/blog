@@ -7,4 +7,4 @@ services:
      - "8082:8082"
     volumes:
      - .:/go/src/github.com/duhruh/blog
-    command: ["go", "run", "cmd/task/main.go", "server"]
+    command: ["go", "run", "cmd/task/main.go", "server", "--watch=true"]

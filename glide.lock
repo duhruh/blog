@@ -1,17 +1,20 @@
-hash: 986778393ade9072f08ce4deffc7d0e2082b8da5c11fb6d05784fbf44fed592b
-updated: 2017-09-17T22:59:35.51111096Z
+hash: 035016f1505c3f554310dbca2e2e98998346bb3765a57deb43116cd4db48f591
+updated: 2017-09-23T21:26:20.0785857Z
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
 - name: github.com/duhruh/tackle
-  version: 55ecc144b8a147ea242de1615240959da7a13da2
+  version: 248d2690132aeefbef39e156df6b341a769cfbe6
   subpackages:
   - domain
+  - dsnotify
   - task
   - transport/grpc
   - transport/http
+- name: github.com/fsnotify/fsnotify
+  version: 4da3e2cfbabc9f751898f250b49f2439785783a1
 - name: github.com/go-kit/kit
   version: a9ca6725cbbea455e61c6bc8a1ed28e81eb3493b
   subpackages:
@@ -27,7 +30,7 @@ imports:
 - name: github.com/go-stack/stack
   version: 817915b46b97fd7bb80e8ab6b69f01a53ac3eebf
 - name: github.com/golang/protobuf
-  version: 11b8df160996e00fd4b55cbaafb3d84ec6d50fa8
+  version: 130e6b02ab059e7b717a096f397c5b60111cae74
   subpackages:
   - proto
   - ptypes/any
@@ -63,7 +66,7 @@ imports:
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: golang.org/x/net
-  version: 8351a756f30f1297fe94bbf4b767ec589c6ea6d0
+  version: 0744d001aa8470aaa53df28d32e5ceeb8af9bd70
   subpackages:
   - context
   - http2
@@ -72,6 +75,10 @@ imports:
   - internal/timeseries
   - lex/httplex
   - trace
+- name: golang.org/x/sys
+  version: 429f518978ab01db8bb6f44b66785088e7fba58b
+  subpackages:
+  - unix
 - name: golang.org/x/text
   version: 1cbadb444a806fd9430d14ad08967ed91da4fa0a
   subpackages:
@@ -80,7 +87,7 @@ imports:
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/genproto
-  version: 595979c8a7bf586b2d293fb42246bf91a0b893d9
+  version: 1e559d0a00eef8a9a43151db4665280bd8dd5886
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
