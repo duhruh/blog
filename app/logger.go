@@ -13,15 +13,16 @@ import (
 // This is where we define our application logger
 // here we initialize the logger to only output to
 // stdout
-func NewLogger(_ Config) log.Logger {
+func NewLogger(c Config) log.Logger {
 
 	var logger log.Logger
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 	logger = newColorLogger(logger)
-	logger = level.NewFilter(logger, level.AllowAll())
+	logger = level.NewFilter(logger, c.LogOption())
 	logger = log.With(
 		logger,
 		"timestamp", log.DefaultTimestampUTC,
+		"environment", c.Environment(),
 		"gitCommit", cfg.GitCommit,
 		"version", cfg.Version,
 		"buildNumber", cfg.BuildNumber,
@@ -35,11 +36,11 @@ func NewLogger(_ Config) log.Logger {
 }
 
 type colorLogger struct {
-	log.Logger
+	next log.Logger
 }
 
 func newColorLogger(l log.Logger) log.Logger {
-	return colorLogger{Logger: l}
+	return colorLogger{next: l}
 }
 
 func (l colorLogger) Log(args ...interface{}) error {
@@ -54,5 +55,5 @@ func (l colorLogger) Log(args ...interface{}) error {
 		key = append(key, fmt.Sprintf("%s", yellow(k)))
 	}
 
-	return l.Logger.Log(key...)
+	return l.next.Log(key...)
 }

@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"bytes"
 	"fmt"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	"github.com/go-kit/kit/log"
@@ -14,65 +13,50 @@ import (
 	"syscall"
 )
 
-type GrpcTransport interface {
-	Mount(transports []tacklegrpc.GrpcTransport, wg *sync.WaitGroup)
-}
-
 type appGrpcTransport struct {
-	logger log.Logger
-	addr   string
+	logger     log.Logger
+	addr       string
+	baseServer *grpc.Server
+	transports []tacklegrpc.GrpcTransport
 }
 
-func NewGrpcTransport(l log.Logger, addr string) GrpcTransport {
-	return appGrpcTransport{logger: l, addr: addr}
+func NewGrpcTransport(l log.Logger, addr string) tacklegrpc.AppGrpcTransport {
+	return &appGrpcTransport{logger: l, addr: addr}
 }
 
-func (gt appGrpcTransport) Mount(transports []tacklegrpc.GrpcTransport, wg *sync.WaitGroup) {
-	baseServer := grpc.NewServer()
+func (gt *appGrpcTransport) Build(transports []tacklegrpc.GrpcTransport) {
+	gt.baseServer = grpc.NewServer()
+	gt.transports = transports
 
+	for _, transport := range gt.transports {
+		transport.NewHandler(gt.baseServer)
+	}
+}
+
+func (gt *appGrpcTransport) Start(wg *sync.WaitGroup) {
 	grpcListener, err := net.Listen("tcp", gt.addr)
 	if err != nil {
 		level.Error(gt.logger).Log("transport", "grpc", "err", err)
 	}
 
-	buf := gt.serverStartMessage()
-	for _, transport := range transports {
-		gt.explainTransport(transport, &buf)
-		transport.NewHandler(baseServer)
-	}
-
-	print(buf.String())
-
 	wg.Add(3)
 	errs := make(chan error, 2)
-	go gt.listen(baseServer, grpcListener, errs, wg)
+	go gt.listen(grpcListener, errs, wg)
 	go gt.osSignals(grpcListener, errs, wg)
 	go gt.serverClose(errs, wg)
-
 }
 
-func (gt appGrpcTransport) serverStartMessage() bytes.Buffer {
-	var buf bytes.Buffer
-	buf.WriteString("====================\n")
-	buf.WriteString("GRPC Server\n")
-	buf.WriteString("====================\n")
-	return buf
+func (gt *appGrpcTransport) Transports() []tacklegrpc.GrpcTransport {
+	return gt.transports
 }
 
-func (gt appGrpcTransport) explainTransport(transport tacklegrpc.GrpcTransport, buf *bytes.Buffer) {
-	handlers := transport.Handlers()
-	for _, handle := range handlers {
-		buf.WriteString("[" + handle.Name() + "] -> " + handle.Endpoint() + "\n")
-	}
-}
-
-func (gt appGrpcTransport) listen(baseServer *grpc.Server, grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
+func (gt *appGrpcTransport) listen(grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
 	level.Info(gt.logger).Log("transport", "grpc", "addr", gt.addr, "message", "listening")
-	errs <- baseServer.Serve(grpcListener)
+	errs <- gt.baseServer.Serve(grpcListener)
 }
 
-func (gt appGrpcTransport) osSignals(grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
+func (gt *appGrpcTransport) osSignals(grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT)
@@ -83,7 +67,7 @@ func (gt appGrpcTransport) osSignals(grpcListener net.Listener, errs chan error,
 	}
 }
 
-func (gt appGrpcTransport) serverClose(errs chan error, wg *sync.WaitGroup) {
+func (gt *appGrpcTransport) serverClose(errs chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
 	level.Info(gt.logger).Log("terminated", <-errs)
 }

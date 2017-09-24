@@ -13,19 +13,26 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"sync"
+	"time"
 )
 
 type application struct {
-	context context.Context
-	config  Config
-	logger  log.Logger
+	context       context.Context
+	config        Config
+	logger        log.Logger
+	httpTransport http.AppHttpTransport
+	grpcTransport grpc.AppGrpcTransport
 }
 
 func NewApplication(cxt context.Context, config Config, logger log.Logger) tackle.Application {
-	return application{context: cxt, config: config, logger: logger}
+	return &application{context: cxt, config: config, logger: logger}
 }
 
-func (a application) Start() {
+func (a *application) Build() {
+	defer func(begin time.Time) {
+		level.Info(a.logger).Log("message", "application built", "took", time.Since(begin))
+	}(time.Now())
+
 	var blogApp blog.App
 	blogApp = blog.NewImplementedService(a.context, a.logger)
 
@@ -35,17 +42,31 @@ func (a application) Start() {
 	var grpcTransports []grpc.GrpcTransport
 	grpcTransports = append(grpcTransports, blogApp.GrpcTransport())
 
-	httpTransport := apphttp.NewHttpTransport(a.logger, a.config.GetHTTPBindAddress())
+	a.httpTransport = apphttp.NewHttpTransport(a.logger, a.config.HttpBindAddress())
 
-	grpcTransport := appgrpc.NewGrpcTransport(a.logger, a.config.GetGRPCBindAddress())
+	a.grpcTransport = appgrpc.NewGrpcTransport(a.logger, a.config.GrpcBindAddress())
 
+	a.httpTransport.Build(httpTransports)
+
+	a.grpcTransport.Build(grpcTransports)
+}
+
+func (a *application) Start() {
 	var wg sync.WaitGroup
 
-	httpTransport.Mount(httpTransports, &wg)
-
-	grpcTransport.Mount(grpcTransports, &wg)
+	a.httpTransport.Start(&wg)
+	a.grpcTransport.Start(&wg)
 
 	level.Info(a.logger).Log("message", "application ready")
+
 	wg.Wait()
+
 	level.Info(a.logger).Log("message", "application halting")
+}
+
+func (a *application) HttpTransport() http.AppHttpTransport {
+	return a.httpTransport
+}
+func (a *application) GrpcTransport() grpc.AppGrpcTransport {
+	return a.grpcTransport
 }
