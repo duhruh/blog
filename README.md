@@ -1,4 +1,4 @@
 Still needs
 
-* [] presenters
-* [] better generators
+* [ ] presenters
+* [ ] better generators
