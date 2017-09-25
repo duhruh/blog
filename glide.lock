@@ -1,15 +1,16 @@
-hash: f5db68fe2441fc0e01c52ac31840952024c17660348e07fbb7eb512bef78134c
-updated: 2017-09-24T16:47:42.9362438Z
+hash: 49e035e7a30058f0c5a6f6368a482a58c0b6050361288d0730dac09339b23309
+updated: 2017-09-25T00:28:19.5873255Z
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
 - name: github.com/duhruh/tackle
-  version: dd1d9a21db7c4c89d9de8f2a388c353ee60a0cc7
+  version: aea72e907d8a676b6b7067361a51294bdd2be29d
   subpackages:
   - domain
   - dsnotify
+  - generic
   - task
   - transport/grpc
   - transport/http
@@ -22,6 +23,7 @@ imports:
   subpackages:
   - endpoint
   - log
+  - log/level
   - metrics
   - metrics/internal/lv
   - metrics/prometheus
@@ -42,6 +44,12 @@ imports:
   version: 24fca303ac6da784b9e8269f724ddeb0b2eea5e7
 - name: github.com/kr/logfmt
   version: b84e30acd515aadc4b783ad4ff83aff3299bdfe0
+- name: github.com/mattn/go-colorable
+  version: 5411d3eea5978e6cdc258b30de592b60df6aba96
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
+  repo: https://github.com/mattn/go-isatty
 - name: github.com/matttproud/golang_protobuf_extensions
   version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
@@ -78,7 +86,8 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/sys
-  version: 429f518978ab01db8bb6f44b66785088e7fba58b
+  version: e24f485414aeafb646f6fca458b0bf869c0880a1
+  repo: https://go.googlesource.com/sys
   subpackages:
   - unix
 - name: golang.org/x/text

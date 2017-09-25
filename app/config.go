@@ -5,19 +5,13 @@ import (
 	"github.com/go-kit/kit/log/level"
 )
 
-type Config interface {
-	HttpBindAddress() string
-	GrpcBindAddress() string
-	LogOption() level.Option
-	Environment() tackle.Environment
-}
 type config struct {
 	httpBindAddress string
 	grpcBindAddress string
 	environment     tackle.Environment
 }
 
-func NewConfig(env tackle.Environment, httpAddr string, grpcAddr string) Config {
+func NewConfig(env tackle.Environment, httpAddr string, grpcAddr string) tackle.Config {
 	return config{environment: env, httpBindAddress: httpAddr, grpcBindAddress: grpcAddr}
 }
 

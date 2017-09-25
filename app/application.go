@@ -18,13 +18,13 @@ import (
 
 type application struct {
 	context       context.Context
-	config        Config
+	config        tackle.Config
 	logger        log.Logger
 	httpTransport http.AppHttpTransport
 	grpcTransport grpc.AppGrpcTransport
 }
 
-func NewApplication(cxt context.Context, config Config, logger log.Logger) tackle.Application {
+func NewApplication(cxt context.Context, config tackle.Config, logger log.Logger) tackle.Application {
 	return &application{context: cxt, config: config, logger: logger}
 }
 
