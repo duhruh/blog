@@ -8,3 +8,9 @@ services:
     volumes:
      - .:/go/src/github.com/duhruh/blog
     command: ["go", "run", "cmd/task/main.go", "server", "--watch=true"]
+    depends_on:
+      - db
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root

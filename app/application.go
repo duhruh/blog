@@ -33,6 +33,8 @@ func (a *application) Build() {
 		level.Info(a.logger).Log("message", "application built", "took", time.Since(begin))
 	}(time.Now())
 
+	_ := NewDatabaseConnection(a.config)
+
 	var blogApp blog.App
 	blogApp = blog.NewImplementedService(a.context, a.logger)
 

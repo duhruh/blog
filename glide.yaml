@@ -36,3 +36,5 @@ import:
   version: 1.5.2
 - package: github.com/fsnotify/fsnotify
 - package: github.com/fatih/color
+- package: upper.io/db.v3
+- package: gopkg.in/yaml.v2

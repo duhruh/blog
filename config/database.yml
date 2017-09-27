@@ -1,0 +1,13 @@
+default: &default
+  host: db
+  user: root
+  password: root
+
+development:
+  <<: *default
+  database: blog
+
+
+test:
+  <<: *default
+  database: blog_test

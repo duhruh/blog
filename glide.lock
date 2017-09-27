@@ -1,5 +1,5 @@
-hash: 49e035e7a30058f0c5a6f6368a482a58c0b6050361288d0730dac09339b23309
-updated: 2017-09-25T00:28:19.5873255Z
+hash: f42122e6a71179eaa426159806d43970568a74761b1a8c962407bf6e54395bbe
+updated: 2017-09-25T03:01:45.4700436Z
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
@@ -31,6 +31,8 @@ imports:
   - transport/http
 - name: github.com/go-logfmt/logfmt
   version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
+- name: github.com/go-sql-driver/mysql
+  version: 7785c74297136c027fdf2fd6f8931c0e19be8aa7
 - name: github.com/go-stack/stack
   version: 817915b46b97fd7bb80e8ab6b69f01a53ac3eebf
 - name: github.com/golang/protobuf
@@ -118,4 +120,18 @@ imports:
   - status
   - tap
   - transport
+- name: gopkg.in/yaml.v2
+  version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
+- name: upper.io/db.v3
+  version: 46f50a98f8d5d77d1d4631f1bcc0ce6496e55734
+  subpackages:
+  - internal/cache
+  - internal/cache/hashstructure
+  - internal/immutable
+  - internal/sqladapter
+  - internal/sqladapter/compat
+  - internal/sqladapter/exql
+  - lib/reflectx
+  - lib/sqlbuilder
+  - mysql
 testImports: []

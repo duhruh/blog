@@ -1,0 +1,10 @@
+name: blog
+
+database:
+  - { include: database.yml }
+
+http:
+  port: 8080
+
+grpc:
+  port: 80802

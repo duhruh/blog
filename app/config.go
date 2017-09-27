@@ -6,13 +6,19 @@ import (
 )
 
 type config struct {
-	httpBindAddress string
-	grpcBindAddress string
-	environment     tackle.Environment
+	httpBindAddress    string
+	grpcBindAddress    string
+	environment        tackle.Environment
+	databaseConnection map[string]string
 }
 
-func NewConfig(env tackle.Environment, httpAddr string, grpcAddr string) tackle.Config {
-	return config{environment: env, httpBindAddress: httpAddr, grpcBindAddress: grpcAddr}
+func NewConfig(env tackle.Environment, httpAddr string, grpcAddr string, connection map[string]string) tackle.Config {
+	return config{
+		environment:        env,
+		httpBindAddress:    httpAddr,
+		grpcBindAddress:    grpcAddr,
+		databaseConnection: connection,
+	}
 }
 
 func (c config) HttpBindAddress() string {
@@ -34,4 +40,8 @@ func (c config) LogOption() level.Option {
 	default:
 		return level.AllowAll()
 	}
+}
+
+func (c config) DatabaseConnection() map[string]string {
+	return c.databaseConnection
 }
