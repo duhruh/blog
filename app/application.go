@@ -11,6 +11,7 @@ import (
 
 	apphttp "github.com/duhruh/blog/app/transport/http"
 
+	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/blog/config"
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/transport/grpc"
@@ -25,6 +26,7 @@ type application struct {
 	logger        log.Logger
 	httpTransport http.AppHttpTransport
 	grpcTransport grpc.AppGrpcTransport
+	connection    db.DatabaseConnection
 }
 
 func NewApplication(cxt context.Context, cfg config.ApplicationConfig, logger log.Logger) tackle.Application {
@@ -36,10 +38,12 @@ func (a *application) Build() {
 		level.Info(a.logger).Log("message", "application built", "took", time.Since(begin))
 	}(time.Now())
 
-	NewDatabaseConnection(a.config)
+	a.connection = db.NewDatabaseConnection(a.config)
+
+	a.connection.Open()
 
 	var blogApp blog.App
-	blogApp = blog.NewImplementedService(a.context, a.logger)
+	blogApp = blog.NewImplementedService(a.context, a.logger, a.connection)
 
 	var httpTransports []http.HttpTransport
 	httpTransports = append(httpTransports, blogApp.HttpTransport())

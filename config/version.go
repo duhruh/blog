@@ -4,6 +4,8 @@ import (
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/config"
 	"github.com/go-kit/kit/log/level"
+
+	"gopkg.in/olivere/elastic.v5"
 )
 
 var (
@@ -22,6 +24,8 @@ type ApplicationConfig interface {
 	LogOption() level.Option
 	Environment() tackle.Environment
 	DatabaseConnection() config.OptionMap
-	ElasticHost() string
+	ElasticSearch() config.OptionMap
 	Name() string
+	Host() string
+	GenerateElasticSearchClient() *elastic.Client
 }

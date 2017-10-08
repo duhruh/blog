@@ -11,3 +11,5 @@ grpc:
 
 elasticsearch:
   host: "http://elasticsearch:9200"
+  username: "elastic"
+  password: "changeme"

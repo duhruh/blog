@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"gopkg.in/olivere/elastic.v5"
 )
 
 // This is where we define our application logger
@@ -15,15 +14,11 @@ import (
 // stdout
 func NewLogger(c config.ApplicationConfig) log.Logger {
 	var logger log.Logger
-	logger = log.NewLogfmtLogger(applog.NewColorWriter(log.NewSyncWriter(os.Stderr)))
-
-	e, _ := elastic.NewClient(elastic.SetURL(c.ElasticHost()), elastic.SetBasicAuth("elastic", "changeme"))
-	host, _ := os.Hostname()
-	logger, err := applog.NewElasticSearchLogger(e, host, c.Name(), logger)
+	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
+	logger, err := applog.NewElasticSearchLogger(c.GenerateElasticSearchClient(), c.Host(), c.Name(), logger)
 	if err != nil {
 		panic(err)
 	}
-
 	logger = level.NewFilter(logger, c.LogOption())
 	logger = log.With(
 		logger,

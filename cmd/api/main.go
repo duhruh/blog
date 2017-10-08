@@ -6,12 +6,12 @@ import (
 	"io"
 	"os"
 
-	//"github.com/duhruh/blog/app"
-
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/config"
-	//"io/ioutil"
+
 	"github.com/duhruh/blog/app"
+
+	"github.com/go-kit/kit/log"
 )
 
 const (
@@ -39,23 +39,21 @@ func main() {
 		panic(err)
 	}
 
-	//name := cfg.Get("name").(string)
-	//httpPort := cfg.Get("http").(config.OptionMap).Get("port").(int)
-	//databaseHost := cfg.Get("database").(config.OptionMap).Get("development").(config.OptionMap).Get("host").(string)
-	//
-	//println(name)
-	//println(httpPort)
-	//println(databaseHost)
+	c := app.NewConfig(tackle.Environment(*environment), cfg)
 
-	//dbFile, err := ioutil.ReadFile(*databaseConfig)
-	//
-	config := app.NewConfig(tackle.Environment(*environment), cfg)
+	logger := app.NewLogger(c)
 
-	logger := app.NewLogger(config)
+	defer recoverHandler(logger)
 
-	application := app.NewApplication(context.Background(), config, logger)
+	application := app.NewApplication(context.Background(), c, logger)
 
 	application.Build()
 
 	application.Start()
+}
+
+func recoverHandler(l log.Logger) {
+	if r := recover(); r != nil {
+		l.Log("panic", r)
+	}
 }

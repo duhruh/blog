@@ -7,6 +7,7 @@ import (
 	"github.com/duhruh/blog/app/blog/transport/grpc"
 	"github.com/duhruh/blog/app/blog/transport/http"
 
+	"github.com/duhruh/blog/app/db"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	tacklehttp "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
@@ -24,14 +25,14 @@ func (h App) Service() Service                        { return h.service }
 func (h App) HttpTransport() tacklehttp.HttpTransport { return h.httpTransport }
 func (h App) GrpcTransport() tacklegrpc.GrpcTransport { return h.grpcTransport }
 
-func NewImplementedService(cxt context.Context, logger log.Logger) App {
+func NewImplementedService(cxt context.Context, logger log.Logger, connection db.DatabaseConnection) App {
 	fieldKeys := []string{"method"}
 
 	var blogRepo repository.BlogRepository
-	blogRepo = repository.NewBlogRepository()
+	blogRepo = repository.NewBlogRepository(connection)
 
 	var postRepo repository.PostRepository
-	postRepo = repository.NewPostRepository()
+	postRepo = repository.NewPostRepository(connection)
 
 	var service Service
 	service = newService(blogRepo, postRepo)

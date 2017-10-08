@@ -1,11 +1,11 @@
 default: &default
-  host: db
-  user: root
-  password: root
+  host: mysql
+  user: default
+  password: secret
 
 development:
   <<: *default
-  database: blog
+  database: default
 
 
 test:
