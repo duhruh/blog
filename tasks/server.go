@@ -139,8 +139,7 @@ func (t *ServerTask) run() {
 	t.Say(t.writer, "") // newline
 	t.currentCommand = exec.Command(
 		t.outBinName,
-		"-http-bind-address=:8080",
-		"-grpc-bind-address=:8081",
+		"-config=config/app.yml",
 		"-environment=development",
 	)
 	t.currentCommand.Env = os.Environ()

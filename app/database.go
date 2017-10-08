@@ -1,17 +1,17 @@
 package app
 
 import (
-	"github.com/duhruh/tackle"
+	"github.com/duhruh/blog/config"
 	"upper.io/db.v3/mysql"
 )
 
-func NewDatabaseConnection(config tackle.Config) DatabaseConnection {
+func NewDatabaseConnection(config config.ApplicationConfig) DatabaseConnection {
 	settings := config.DatabaseConnection()
 	conn := mysql.ConnectionURL{
-		Host:     settings["host"],
-		Database: settings["database"],
-		User:     settings["user"],
-		Password: settings["password"],
+		Host:     settings.Get("host").(string),
+		Database: settings.Get("database").(string),
+		User:     settings.Get("user").(string),
+		Password: settings.Get("password").(string),
 	}
 	return databaseConnection{
 		connection: conn,

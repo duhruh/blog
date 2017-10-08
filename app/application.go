@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/duhruh/blog/app/blog"
+
 	appgrpc "github.com/duhruh/blog/app/transport/grpc"
 	apphttp "github.com/duhruh/blog/app/transport/http"
 
+	"github.com/duhruh/blog/config"
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/transport/grpc"
 	"github.com/duhruh/tackle/transport/http"
@@ -18,14 +20,14 @@ import (
 
 type application struct {
 	context       context.Context
-	config        tackle.Config
+	config        config.ApplicationConfig
 	logger        log.Logger
 	httpTransport http.AppHttpTransport
 	grpcTransport grpc.AppGrpcTransport
 }
 
-func NewApplication(cxt context.Context, config tackle.Config, logger log.Logger) tackle.Application {
-	return &application{context: cxt, config: config, logger: logger}
+func NewApplication(cxt context.Context, cfg config.ApplicationConfig, logger log.Logger) tackle.Application {
+	return &application{context: cxt, config: cfg, logger: logger}
 }
 
 func (a *application) Build() {
@@ -33,7 +35,7 @@ func (a *application) Build() {
 		level.Info(a.logger).Log("message", "application built", "took", time.Since(begin))
 	}(time.Now())
 
-	_ := NewDatabaseConnection(a.config)
+	//NewDatabaseConnection(a.config)
 
 	var blogApp blog.App
 	blogApp = blog.NewImplementedService(a.context, a.logger)

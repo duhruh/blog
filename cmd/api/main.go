@@ -3,33 +3,53 @@ package main
 import (
 	"context"
 	"flag"
+	"io"
+	"os"
 
-	"github.com/duhruh/blog/app"
+	//"github.com/duhruh/blog/app"
 
 	"github.com/duhruh/tackle"
-	"io/ioutil"
+	"github.com/duhruh/tackle/config"
+	//"io/ioutil"
+	"github.com/duhruh/blog/app"
 )
 
 const (
-	defaultHttpPort       = ":8080"
-	defaultGrpcPort       = ":8082"
-	defaultEnvironment    = string(tackle.Production)
-	defaultDatabaseConfig = "config/database.yml"
+	defaultEnvironment = string(tackle.Development)
+	defaultAppConfig   = "config/app.yml"
 )
 
 var (
-	environment     = flag.String("environment", defaultEnvironment, "application environment")
-	httpBindAddress = flag.String("http-bind-address", defaultHttpPort, "http: Port to bind the server to")
-	grpcBindAddress = flag.String("grpc-bind-address", defaultGrpcPort, "grpc: Port to bind the server to")
-	databaseConfig  = flag.String("db-config", defaultDatabaseConfig, "db config file")
+	environment = flag.String("environment", defaultEnvironment, "application environment")
+	appConfig   = flag.String("config", defaultAppConfig, "application config file")
 )
 
 func main() {
 	flag.Parse()
 
-	dbFile, err := ioutil.ReadFile(*databaseConfig)
+	var r io.Reader
+	r, err := os.Open(*appConfig)
+	if err != nil {
+		panic(err)
+	}
 
-	config := app.NewConfig(tackle.Environment(*environment), *httpBindAddress, *grpcBindAddress)
+	yaml := config.NewYamlLoader()
+	cfg, err := yaml.LoadFromFile(r)
+	if err != nil {
+		panic(err)
+	}
+
+	//name := cfg.Get("name").(string)
+	//httpPort := cfg.Get("http").(config.OptionMap).Get("port").(int)
+	//databaseHost := cfg.Get("database").(config.OptionMap).Get("development").(config.OptionMap).Get("host").(string)
+	//
+	//println(name)
+	//println(httpPort)
+	//println(databaseHost)
+
+	//dbFile, err := ioutil.ReadFile(*databaseConfig)
+	//
+	config := app.NewConfig(tackle.Environment(*environment), cfg)
 
 	logger := app.NewLogger(config)
 

@@ -53,7 +53,7 @@ func (gt *appGrpcTransport) Transports() []tacklegrpc.GrpcTransport {
 
 func (gt *appGrpcTransport) listen(grpcListener net.Listener, errs chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
-	level.Info(gt.logger).Log("transport", "grpc", "addr", gt.addr, "message", "listening")
+	level.Info(gt.logger).Log("transport", "grpc", "address", gt.addr, "message", "listening")
 	errs <- gt.baseServer.Serve(grpcListener)
 }
 

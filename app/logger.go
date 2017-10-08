@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	cfg "github.com/duhruh/blog/config"
+	"github.com/duhruh/blog/config"
 
-	"github.com/duhruh/tackle"
 	"github.com/fatih/color"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
@@ -15,20 +14,20 @@ import (
 // This is where we define our application logger
 // here we initialize the logger to only output to
 // stdout
-func NewLogger(c tackle.Config) log.Logger {
+func NewLogger(c config.ApplicationConfig) log.Logger {
 
 	var logger log.Logger
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
-	logger = newColorLogger(logger)
+	//logger = newColorLogger(logger)
 	logger = level.NewFilter(logger, c.LogOption())
 	logger = log.With(
 		logger,
 		"timestamp", log.DefaultTimestampUTC,
 		"environment", c.Environment(),
-		"gitCommit", cfg.GitCommit,
-		"version", cfg.Version,
-		"buildNumber", cfg.BuildNumber,
-		"buildTime", cfg.BuildTime,
+		"gitCommit", config.GitCommit,
+		"version", config.Version,
+		"buildNumber", config.BuildNumber,
+		"buildTime", config.BuildTime,
 		"caller", log.DefaultCaller,
 	)
 
