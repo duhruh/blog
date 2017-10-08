@@ -1,13 +1,14 @@
-hash: f42122e6a71179eaa426159806d43970568a74761b1a8c962407bf6e54395bbe
-updated: 2017-09-25T03:01:45.4700436Z
+hash: 443f2667519e3ef934072dcacdcb779670ec9e574ae637aaaf28c0c3a0508417
+updated: 2017-10-08T15:37:32.0691531Z
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
 - name: github.com/duhruh/tackle
-  version: aea72e907d8a676b6b7067361a51294bdd2be29d
+  version: 35dda67298f663e71e532ea8e4c912401a64376e
   subpackages:
+  - config
   - domain
   - dsnotify
   - generic
@@ -32,7 +33,7 @@ imports:
 - name: github.com/go-logfmt/logfmt
   version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
 - name: github.com/go-sql-driver/mysql
-  version: 7785c74297136c027fdf2fd6f8931c0e19be8aa7
+  version: ee359f95877bdef36cbb602711e49b6f0becfca9
 - name: github.com/go-stack/stack
   version: 817915b46b97fd7bb80e8ab6b69f01a53ac3eebf
 - name: github.com/golang/protobuf
@@ -56,6 +57,8 @@ imports:
   version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
   - pbutil
+- name: github.com/pkg/errors
+  version: 2b3a18b5f0fb6b4f9190549597d3f962c02bc5eb
 - name: github.com/prometheus/client_golang
   version: 967789050ba94deca04a5e84cce8ad472ce313c1
   subpackages:
@@ -66,7 +69,7 @@ imports:
   subpackages:
   - go
 - name: github.com/prometheus/common
-  version: 2f17f4a9d485bf34b4bfaccc273805040e4f86c8
+  version: 1bab55dd05dbff384524a6a1c99006d9eb5f139b
   subpackages:
   - expfmt
   - internal/bitbucket.org/ww/goautoneg
@@ -77,6 +80,8 @@ imports:
   - xfs
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: github.com/sirupsen/logrus
+  version: 89742aefa4b206dcf400792f3bd35b542998eb3b
 - name: golang.org/x/net
   version: 0744d001aa8470aaa53df28d32e5ceeb8af9bd70
   subpackages:
@@ -93,14 +98,14 @@ imports:
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: 1cbadb444a806fd9430d14ad08967ed91da4fa0a
+  version: 825fc78a2fd6fa0a5447e300189e3219e05e1f25
   subpackages:
   - secure/bidirule
   - transform
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/genproto
-  version: 1e559d0a00eef8a9a43151db4665280bd8dd5886
+  version: f676e0f3ac6395ff1a529ae59a6670878a8371a6
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
@@ -120,6 +125,11 @@ imports:
   - status
   - tap
   - transport
+- name: gopkg.in/olivere/elastic.v5
+  version: 75b071e35066bfb592a0d770e4cd1e5a5e45edf0
+  subpackages:
+  - config
+  - uritemplates
 - name: gopkg.in/yaml.v2
   version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
 - name: upper.io/db.v3

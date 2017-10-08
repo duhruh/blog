@@ -26,7 +26,7 @@ func (s *loggingService) ShowBlog(id domain.Identity) (blog entity.Blog, err err
 			"method", "ShowBlog",
 			"id", id.Identity(),
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.ShowBlog(id)
@@ -37,7 +37,7 @@ func (s *loggingService) ListBlogs() (bs []entity.Blog, err error) {
 		level.Info(s.logger).Log(
 			"method", "ListBlogs",
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.ListBlogs()
@@ -49,7 +49,7 @@ func (s *loggingService) CreateBlog(name string) (bs entity.Blog, err error) {
 			"method", "CreateBlog",
 			"name", name,
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.CreateBlog(name)
@@ -61,7 +61,7 @@ func (s *loggingService) ShowPost(id domain.Identity) (post entity.Post, err err
 			"method", "ShowPost",
 			"id", id.Identity(),
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.ShowPost(id)
@@ -73,7 +73,7 @@ func (s *loggingService) ListPosts(blog entity.Blog) (bs []entity.Post, err erro
 			"method", "ListPosts",
 			"blog", blog.Identity().Identity(),
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.ListPosts(blog)
@@ -86,7 +86,7 @@ func (s *loggingService) CreatePost(blog entity.Blog, body string) (bs entity.Po
 			"blog", blog.Identity().Identity(),
 			"body", body,
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.CreatePost(blog, body)
@@ -99,7 +99,7 @@ func (s *loggingService) UpdateBlog(blog entity.Blog) (_ entity.Blog, err error)
 			"blog", blog.Identity().Identity(),
 			"name", blog.Name(),
 			"took", time.Since(begin),
-			"err", err,
+			"error", err,
 		)
 	}(time.Now())
 	return s.Service.UpdateBlog(blog)

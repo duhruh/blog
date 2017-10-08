@@ -1,16 +1,72 @@
 version: '3'
 services:
+
   app:
     build: .
     ports:
      - "${APPLICATION_HTTP_PORT}:8080"
      - "${APPLICATION_GRPC_PORT}:8082"
     volumes:
-     - .:/go/src/github.com/duhruh/blog
+     - ${APPLICATION}:/go/src/github.com/duhruh/blog
     command: ["go", "run", "cmd/task/main.go", "server", "--watch=true"]
-#    depends_on:
-#      - db
-#  db:
-#    image: mysql
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
+    tty: true
+    networks:
+      - frontend
+      - backend
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.6.2
+    ports:
+      - "${KIBANA_HTTP_PORT}:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - frontend
+      - backend
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.2
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-plugins:/usr/share/elasticsearch/plugins
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "${ELASTICSEARCH_HOST_HTTP_PORT}:9200"
+      - "${ELASTICSEARCH_HOST_TRANSPORT_PORT}:9300"
+    networks:
+      - frontend
+      - backend
+
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ${DATA_SAVE_PATH}/mysql:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - backend
+
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"
+
+volumes:
+  mysql:
+    driver: "local"
+  elasticsearch-data:
+    driver: "local"
+  elasticsearch-plugins:
+    driver: "local"

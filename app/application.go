@@ -8,6 +8,7 @@ import (
 	"github.com/duhruh/blog/app/blog"
 
 	appgrpc "github.com/duhruh/blog/app/transport/grpc"
+
 	apphttp "github.com/duhruh/blog/app/transport/http"
 
 	"github.com/duhruh/blog/config"
@@ -35,7 +36,7 @@ func (a *application) Build() {
 		level.Info(a.logger).Log("message", "application built", "took", time.Since(begin))
 	}(time.Now())
 
-	//NewDatabaseConnection(a.config)
+	NewDatabaseConnection(a.config)
 
 	var blogApp blog.App
 	blogApp = blog.NewImplementedService(a.context, a.logger)

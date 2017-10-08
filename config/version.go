@@ -5,6 +5,7 @@ import (
 	"github.com/duhruh/tackle/config"
 	"github.com/go-kit/kit/log/level"
 )
+
 var (
 	GitCommit string
 
@@ -15,11 +16,12 @@ var (
 	BuildTime string
 )
 
-
 type ApplicationConfig interface {
 	HttpBindAddress() string
 	GrpcBindAddress() string
 	LogOption() level.Option
 	Environment() tackle.Environment
 	DatabaseConnection() config.OptionMap
+	ElasticHost() string
+	Name() string
 }

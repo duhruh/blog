@@ -44,6 +44,14 @@ func (c appConfig) LogOption() level.Option {
 	}
 }
 
+func (c appConfig) Name() string {
+	return c.Get("name").(string)
+}
+
+func (c appConfig) ElasticHost() string {
+	return c.Get("elasticsearch").(tackleconfig.OptionMap).Get("host").(string)
+}
+
 func (c appConfig) DatabaseConnection() tackleconfig.OptionMap {
 	return c.Get("database").(tackleconfig.OptionMap).Get(string(c.environment)).(tackleconfig.OptionMap)
 }
