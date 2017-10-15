@@ -8,7 +8,6 @@ import (
 	"github.com/duhruh/blog/app"
 
 	"github.com/duhruh/tackle"
-	"github.com/duhruh/tackle/config"
 	"github.com/duhruh/tackle/task"
 	"github.com/duhruh/tackle/transport/grpc"
 	"github.com/duhruh/tackle/transport/http"
@@ -42,8 +41,7 @@ func (t RoutesTask) Options() []task.Option     { return t.options }
 func (t RoutesTask) Arguments() []task.Argument { return t.arguments }
 
 func (t RoutesTask) Run(w io.Writer) {
-	var options []config.Option
-	a := app.NewApplication(context.Background(), app.NewConfig(tackle.Test, config.NewConfig(config.NewOptionMap(options))), log.NewNopLogger())
+	a := app.NewApplication(context.Background(), app.NewConfigFromYamlFile(tackle.Test, "config/app.yml"), log.NewNopLogger())
 
 	a.Build()
 

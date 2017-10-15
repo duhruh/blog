@@ -3,15 +3,11 @@ package main
 import (
 	"context"
 	"flag"
-	"io"
-	"os"
 
 	"github.com/duhruh/tackle"
-	"github.com/duhruh/tackle/config"
+	"github.com/go-kit/kit/log"
 
 	"github.com/duhruh/blog/app"
-
-	"github.com/go-kit/kit/log"
 )
 
 const (
@@ -27,19 +23,7 @@ var (
 func main() {
 	flag.Parse()
 
-	var r io.Reader
-	r, err := os.Open(*appConfig)
-	if err != nil {
-		panic(err)
-	}
-
-	yaml := config.NewYamlLoader()
-	cfg, err := yaml.LoadFromFile(r)
-	if err != nil {
-		panic(err)
-	}
-
-	c := app.NewConfig(tackle.Environment(*environment), cfg)
+	c := app.NewConfigFromYamlFile(tackle.Environment(*environment), *appConfig)
 
 	logger := app.NewLogger(c)
 

@@ -9,6 +9,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"gopkg.in/olivere/elastic.v5"
 	"os"
+	"io"
 )
 
 type appConfig struct {
@@ -21,6 +22,23 @@ func NewConfig(env tackle.Environment, raw tackleconfig.Config) config.Applicati
 		environment: env,
 		Config:      raw,
 	}
+}
+
+
+func NewConfigFromYamlFile(env tackle.Environment, file string) config.ApplicationConfig{
+	var r io.Reader
+	r, err := os.Open(file)
+	if err != nil {
+		panic(err)
+	}
+
+	yaml := tackleconfig.NewYamlLoader()
+	cfg, err := yaml.LoadFromFile(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return NewConfig(env, cfg)
 }
 
 func (c appConfig) HttpBindAddress() string {

@@ -1,7 +1,7 @@
 default: &default
   host: mysql
-  user: default
-  password: secret
+  user: root
+  password: root
 
 development:
   <<: *default
@@ -10,4 +10,4 @@ development:
 
 test:
   <<: *default
-  database: blog_test
+  database: default_test
