@@ -5,6 +5,7 @@ import (
 
 	"github.com/duhruh/blog/app/blog/entity"
 
+	"github.com/duhruh/blog/app/blog/errors"
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
@@ -20,7 +21,7 @@ func newLoggingService(logger log.Logger, s Service) Service {
 	return &loggingService{logger, s}
 }
 
-func (s *loggingService) logIt(begin time.Time, err error, keyvals ...interface{}) {
+func (s *loggingService) logIt(took time.Duration, err error, keyvals ...interface{}) {
 	var logLevel log.Logger
 	logLevel = level.Debug(s.logger)
 
@@ -28,42 +29,56 @@ func (s *loggingService) logIt(begin time.Time, err error, keyvals ...interface{
 		logLevel = level.Error(s.logger)
 	}
 
-	keyvals = append(keyvals, "took", time.Since(begin), "error", err)
+	keyvals = append(keyvals, "took", took, "error", err, "trace", errors.StackTrace(err))
 
 	logLevel.Log(keyvals...)
 }
 
 func (s *loggingService) ShowBlog(id domain.Identity) (blog entity.Blog, err error) {
-	defer s.logIt(time.Now(), err, "method", "ShowBlog", "id", id.Identity())
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "ShowBlog", "id", id.Identity())
+	}(time.Now())
 	return s.Service.ShowBlog(id)
 }
 
 func (s *loggingService) ListBlogs() (bs []entity.Blog, err error) {
-	defer s.logIt(time.Now(), err, "method", "ListBlogs")
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "ListBlogs")
+	}(time.Now())
 	return s.Service.ListBlogs()
 }
 
 func (s *loggingService) CreateBlog(name string) (bs entity.Blog, err error) {
-	defer s.logIt(time.Now(), err, "method", "CreateBlog", "name", name)
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "CreateBlog", "name", name)
+	}(time.Now())
 	return s.Service.CreateBlog(name)
 }
 
 func (s *loggingService) ShowPost(id domain.Identity) (post entity.Post, err error) {
-	defer s.logIt(time.Now(), err, "method", "ShowPost", "id", id.Identity())
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "ShowPost", "id", id.Identity())
+	}(time.Now())
 	return s.Service.ShowPost(id)
 }
 
 func (s *loggingService) ListPosts(blog entity.Blog) (bs []entity.Post, err error) {
-	defer s.logIt(time.Now(), err, "method", "ListPosts", "blog", blog.Identity().Identity())
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "ListPosts", "blog", blog.Identity().Identity())
+	}(time.Now())
 	return s.Service.ListPosts(blog)
 }
 
 func (s *loggingService) CreatePost(blog entity.Blog, body string) (bs entity.Post, err error) {
-	defer s.logIt(time.Now(), err, "method", "CreatePost", "blog", blog.Identity().Identity(), "body", body)
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "CreatePost", "blog", blog.Identity().Identity(), "body", body)
+	}(time.Now())
 	return s.Service.CreatePost(blog, body)
 }
 
 func (s *loggingService) UpdateBlog(blog entity.Blog) (_ entity.Blog, err error) {
-	defer s.logIt(time.Now(), err, "method", "UpdateBlog", "blog", blog.Identity().Identity(), "name", blog.Name())
+	defer func(begin time.Time) {
+		s.logIt(time.Since(begin), err, "method", "UpdateBlog", "blog", blog.Identity().Identity(), "name", blog.Name())
+	}(time.Now())
 	return s.Service.UpdateBlog(blog)
 }

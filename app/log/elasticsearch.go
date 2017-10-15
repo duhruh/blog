@@ -22,16 +22,16 @@ func generateElasticLogger(client *elastic.Client, host string, indexFunc IndexN
 
 	exists, err := client.IndexExists(indexFunc()).Do(ctx)
 	if err != nil {
-		return nil, err
+		return logger, err
 	}
 
 	if !exists {
 		createIndex, err := client.CreateIndex(indexFunc()).Do(ctx)
 		if err != nil {
-			return nil, err
+			return logger, err
 		}
 		if !createIndex.Acknowledged {
-			return nil, ErrCannotCreateIndex
+			return logger, ErrCannotCreateIndex
 		}
 	}
 

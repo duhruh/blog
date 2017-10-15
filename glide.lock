@@ -1,5 +1,5 @@
-hash: 443f2667519e3ef934072dcacdcb779670ec9e574ae637aaaf28c0c3a0508417
-updated: 2017-10-08T15:37:32.0691531Z
+hash: 6b077ea34940c0ff1ce6f0936459f3d27b71e8a99c409eba5bef8e6822f2a4ef
+updated: 2017-10-15T01:34:55.2349836Z
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
@@ -16,9 +16,11 @@ imports:
   - transport/grpc
   - transport/http
 - name: github.com/fatih/color
-  version: 1535ebc2637cc042c938f07fa26c6356ab8f8504
+  version: 5df930a27be2502f99b292b7cc09ebad4d0891f4
 - name: github.com/fsnotify/fsnotify
   version: 4da3e2cfbabc9f751898f250b49f2439785783a1
+- name: github.com/go-errors/errors
+  version: 8fa88b06e5974e97fbf9899a7f86a344bfd1f105
 - name: github.com/go-kit/kit
   version: a9ca6725cbbea455e61c6bc8a1ed28e81eb3493b
   subpackages:
@@ -33,7 +35,7 @@ imports:
 - name: github.com/go-logfmt/logfmt
   version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
 - name: github.com/go-sql-driver/mysql
-  version: ee359f95877bdef36cbb602711e49b6f0becfca9
+  version: eb92a8dc628ca52501ddae1ed90eca7514f215bf
 - name: github.com/go-stack/stack
   version: 817915b46b97fd7bb80e8ab6b69f01a53ac3eebf
 - name: github.com/golang/protobuf
@@ -83,7 +85,7 @@ imports:
 - name: github.com/sirupsen/logrus
   version: 89742aefa4b206dcf400792f3bd35b542998eb3b
 - name: golang.org/x/net
-  version: 0744d001aa8470aaa53df28d32e5ceeb8af9bd70
+  version: a04bdaca5b32abe1c069418fb7088ae607de5bd0
   subpackages:
   - context
   - http2
@@ -98,7 +100,7 @@ imports:
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: 825fc78a2fd6fa0a5447e300189e3219e05e1f25
+  version: c01e4764d870b77f8abe5096ee19ad20d80e8075
   subpackages:
   - secure/bidirule
   - transform
@@ -133,7 +135,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
 - name: upper.io/db.v3
-  version: 46f50a98f8d5d77d1d4631f1bcc0ce6496e55734
+  version: 4ceccb1227aba5fc0f71ca3adc5dd759dfbc093e
   subpackages:
   - internal/cache
   - internal/cache/hashstructure

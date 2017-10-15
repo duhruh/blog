@@ -30,7 +30,10 @@ func (ef endpointFactory) ListBlogsEndpoint() endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		r, err := ef.service.ListBlogs()
 
-		return r, err
+		pkt := tackle.NewPacket()
+		pkt.Put("data", r)
+		pkt.Put("error", err)
+		return pkt, nil
 	}
 }
 func (ef endpointFactory) ShowBlogEndpoint() endpoint.Endpoint {

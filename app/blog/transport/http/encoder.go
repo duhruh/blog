@@ -114,16 +114,21 @@ func (hs encoderFactory) listBlogsRequest() kithttp.DecodeRequestFunc {
 
 func (hs encoderFactory) listBlogsResponse() kithttp.EncodeResponseFunc {
 	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
+		data := response.(tackle.Packet)
+		err := data.Get("error")
+		if err != nil {
+			hs.ErrorEncoder()(ctx, err.(error), w)
+			return nil
+		}
 		//err := hs.errorFromResponse(data)
 		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
+		//
 		//}
 
 		//var blogs []entity.Blog
 
-		blogs := response.([]entity.Blog)
+		bb := data.Get("data")
+		blogs := bb.([]entity.Blog)
 
 		type bjson struct {
 			Id   string `json:"id"`

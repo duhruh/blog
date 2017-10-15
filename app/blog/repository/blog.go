@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/duhruh/blog/app/blog/entity"
+	blogerror "github.com/duhruh/blog/app/blog/errors"
 
 	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/tackle/domain"
@@ -14,7 +15,7 @@ import (
 type BlogRepository interface {
 	FindByIdentity(id domain.Identity) (entity.Blog, error)
 	Create(b entity.Blog) entity.Blog
-	All() []entity.Blog
+	All() ([]entity.Blog, error)
 	Update(b entity.Blog) (entity.Blog, error)
 }
 
@@ -62,7 +63,7 @@ func (br blogRepository) Create(b entity.Blog) entity.Blog {
 	return b
 }
 
-func (br blogRepository) All() []entity.Blog {
+func (br blogRepository) All() ([]entity.Blog, error) {
 	var b []blog
 	var rb []entity.Blog
 
@@ -70,14 +71,14 @@ func (br blogRepository) All() []entity.Blog {
 	err := res.All(&b)
 
 	if err != nil {
-		return rb
+		return rb, blogerror.New(blogerror.ErrorCouldNotRetrieveBlogs)
 	}
 
 	for _, bb := range b {
 		rb = append(rb, br.inflateBlogEntity(entity.NewBlog(), bb))
 	}
 
-	return rb
+	return rb, nil
 }
 
 func (br blogRepository) Update(b entity.Blog) (entity.Blog, error) {

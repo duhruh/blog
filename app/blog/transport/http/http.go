@@ -6,6 +6,7 @@ import (
 	"github.com/duhruh/tackle"
 	tacklehttp "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 )
@@ -30,7 +31,7 @@ func (h httpTransport) NewHandler(handler *http.ServeMux) http.Handler {
 
 	options := []kithttp.ServerOption{
 		kithttp.ServerErrorEncoder(h.encoderFactory.ErrorEncoder()),
-		kithttp.ServerErrorLogger(h.logger),
+		kithttp.ServerErrorLogger(level.Error(h.logger)),
 	}
 
 	for _, route := range routes {

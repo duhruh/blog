@@ -75,7 +75,7 @@ func (c appConfig) GenerateElasticSearchClient() *elastic.Client {
 	)
 
 	if err != nil {
-		panic(err)
+		return nil
 	}
 
 	return client

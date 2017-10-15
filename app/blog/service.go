@@ -48,7 +48,7 @@ func (s service) ShowBlog(id domain.Identity) (entity.Blog, error) {
 }
 
 func (s service) ListBlogs() ([]entity.Blog, error) {
-	return s.blogRepository.All(), nil
+	return s.blogRepository.All()
 }
 
 func (s service) CreateBlog(name string) (entity.Blog, error) {

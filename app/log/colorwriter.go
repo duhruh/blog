@@ -59,13 +59,26 @@ func (cw colorWriter) Write(p []byte) (n int, err error) {
 
 // rip string converts the raw log message to its key value pairs
 func (cw colorWriter) ripString(str string) []string {
-	parts := strings.Split(str, " ")
-	for i, k := range parts {
-		if !strings.Contains(k, "=") {
-			parts[i-1] = parts[i-1] + " " + k
-			parts = append(parts[:i], parts[i+1:]...) //remove it
-		}
+	var parts []string
+	str = strings.TrimSpace(str)
+	//var re = regexp.MustCompile(`(.+?)(?=(?:\s[\w]+=)|$)`)
+	var re = regexp.MustCompile(`((?:.+?)(?:(?:\\"|"(?:\\"|[^"])*"|(\+))|\s|$))`)
+	for _, match := range re.FindAllString(str, -1) {
+		//fmt.Println(match, "found at index", i)
+		parts = append(parts, strings.TrimSpace(match))
 	}
+
+	//parts := strings.Split(str, " ")
+	//for i, k := range parts {
+	//	if !strings.Contains(k, "=") {
+	//		prevIndex := i - 1
+	//
+	//		if prevIndex >= 0 {
+	//			parts[prevIndex] = parts[prevIndex] + " " + k
+	//			parts = cw.removeFromArray(parts, i)
+	//		}
+	//	}
+	//}
 
 	return parts
 }

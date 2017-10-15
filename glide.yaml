@@ -42,3 +42,4 @@ import:
   version: master
 - package: gopkg.in/olivere/elastic.v5
   version: v5.0.46
+- package: github.com/go-errors/errors
