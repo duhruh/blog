@@ -35,7 +35,7 @@ func NewApplication(cxt context.Context, cfg config.ApplicationConfig, logger lo
 
 func (a *application) Build() {
 	defer func(begin time.Time) {
-		level.Info(a.logger).Log("message", `application " b"uilt`, "took", time.Since(begin))
+		level.Info(a.logger).Log("message", `application built`, "took", time.Since(begin))
 	}(time.Now())
 
 	a.connection = db.NewDatabaseConnection(a.config)
