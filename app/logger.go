@@ -14,7 +14,7 @@ import (
 // stdout
 func NewLogger(c config.ApplicationConfig) log.Logger {
 	var logger log.Logger
-	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
+	logger = log.NewLogfmtLogger(applog.NewColorWriter(log.NewSyncWriter(os.Stderr)))
 	logger, err := applog.NewElasticSearchLogger(c.GenerateElasticSearchClient(), c.Host(), c.Name(), logger)
 	if err != nil {
 		panic(err)
@@ -35,3 +35,5 @@ func NewLogger(c config.ApplicationConfig) log.Logger {
 
 	return logger
 }
+
+
