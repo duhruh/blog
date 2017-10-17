@@ -42,7 +42,7 @@ func newService(blogRepo repository.BlogRepository, postRepo repository.PostRepo
 func (s service) ShowBlog(id domain.Identity) (entity.Blog, error) {
 	var b entity.Blog
 
-	b, err := s.blogRepository.FindByIdentity(id)
+	b, err := s.blog().FindByIdentity(id)
 
 	if err != nil {
 		return b, ErrBlogNotFound
@@ -61,17 +61,17 @@ func (s service) CreateBlog(name string) (entity.Blog, error) {
 	blog.SetName(name)
 	blog.SetIdentity(entity.NextIdentity())
 
-	return s.blogRepository.Create(blog), nil
+	return s.blog().Create(blog), nil
 }
 
 func (s service) UpdateBlog(blog entity.Blog) (entity.Blog, error) {
-	return s.blogRepository.Update(blog)
+	return s.blog().Update(blog)
 }
 
 func (s service) ShowPost(id domain.Identity) (entity.Post, error) {
 	var p entity.Post
 
-	p, err := s.postRepository.FindByIdentity(id)
+	p, err := s.post().FindByIdentity(id)
 
 	if err != nil {
 		return p, ErrPostNotFound
@@ -81,7 +81,7 @@ func (s service) ShowPost(id domain.Identity) (entity.Post, error) {
 }
 
 func (s service) ListPosts(blog entity.Blog) ([]entity.Post, error) {
-	return s.postRepository.All(), nil
+	return s.post().All(), nil
 }
 
 func (s service) CreatePost(blog entity.Blog, body string) (entity.Post, error) {
@@ -90,11 +90,15 @@ func (s service) CreatePost(blog entity.Blog, body string) (entity.Post, error) 
 	post.SetBody(body)
 	post.SetBlog(blog)
 
-	return s.postRepository.Create(post), nil
+	return s.post().Create(post), nil
 }
 
 func (s service) blog() repository.BlogRepository {
 	return s.blogRepository.WithContext(s.ctx)
+}
+
+func (s service) post() repository.PostRepository {
+	return s.postRepository.WithContext(s.ctx)
 }
 
 func (s service) WithContext(ctx context.Context) Service {

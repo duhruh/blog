@@ -6,6 +6,7 @@ import (
 	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/tackle/domain"
 
+	"context"
 	upper "upper.io/db.v3"
 )
 
@@ -13,10 +14,12 @@ type PostRepository interface {
 	FindByIdentity(id domain.Identity) (entity.Post, error)
 	Create(b entity.Post) entity.Post
 	All() []entity.Post
+	WithContext(ctx context.Context) PostRepository
 }
 
 type postRepository struct {
 	connection db.DatabaseConnection
+	ctx        context.Context
 }
 
 type post struct {
@@ -26,11 +29,11 @@ type post struct {
 }
 
 func NewPostRepository(connection db.DatabaseConnection) PostRepository {
-	return postRepository{connection: connection}
+	return postRepository{connection: connection, ctx: context.Background()}
 }
 
 func (br postRepository) postTable() upper.Collection {
-	return br.connection.Connection().Collection("post")
+	return br.connection.ConnectionWithContext(br.ctx).Collection("post")
 }
 
 func (br postRepository) FindByIdentity(id domain.Identity) (entity.Post, error) {
@@ -93,4 +96,9 @@ func (br postRepository) deflatePostEntity(b entity.Post) post {
 	bb.Body = b.Body()
 	bb.BlogId = b.BlogId().Identity().(string)
 	return bb
+}
+
+func (br postRepository) WithContext(ctx context.Context) PostRepository {
+	br.ctx = ctx
+	return br
 }
