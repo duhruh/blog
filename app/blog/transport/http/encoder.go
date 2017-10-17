@@ -107,7 +107,6 @@ func (hs encoderFactory) ListBlogsEncoder() tacklehttp.Encoder {
 
 func (hs encoderFactory) listBlogsRequest() kithttp.DecodeRequestFunc {
 	return kithttp.DecodeRequestFunc(func(_ context.Context, r *http.Request) (interface{}, error) {
-
 		return tackle.NewPacket(), nil
 	})
 }

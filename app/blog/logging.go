@@ -5,7 +5,7 @@ import (
 
 	"github.com/duhruh/blog/app/blog/entity"
 
-	"github.com/duhruh/blog/app/blog/errors"
+	"github.com/duhruh/blog/app/errors"
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"

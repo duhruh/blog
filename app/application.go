@@ -38,7 +38,7 @@ func (a *application) Build() {
 		level.Info(a.logger).Log("message", `application built`, "took", time.Since(begin))
 	}(time.Now())
 
-	a.connection = db.NewDatabaseConnection(a.config)
+	a.connection = db.NewDatabaseConnection(a.config, log.With(a.logger, "component", "database"))
 
 	a.connection.Open()
 

@@ -26,9 +26,14 @@ func (ef endpointFactory) Generate(end string) (endpoint.Endpoint, error) {
 	return ef.EndpointFactory.GenerateWithInstance(ef, end)
 }
 
+var uhh = 0
+
 func (ef endpointFactory) ListBlogsEndpoint() endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		r, err := ef.service.ListBlogs()
+		uhh += 1
+		c := context.WithValue(ctx, "count", uhh)
+		s := ef.service.WithContext(c)
+		r, err := s.ListBlogs()
 
 		pkt := tackle.NewPacket()
 		pkt.Put("data", r)

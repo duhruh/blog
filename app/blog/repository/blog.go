@@ -4,12 +4,13 @@ import (
 	"errors"
 
 	"github.com/duhruh/blog/app/blog/entity"
-	blogerror "github.com/duhruh/blog/app/blog/errors"
+	blogerror "github.com/duhruh/blog/app/errors"
 
 	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/tackle/domain"
 
 	upper "upper.io/db.v3"
+	"context"
 )
 
 type BlogRepository interface {
@@ -17,10 +18,12 @@ type BlogRepository interface {
 	Create(b entity.Blog) entity.Blog
 	All() ([]entity.Blog, error)
 	Update(b entity.Blog) (entity.Blog, error)
+	WithContext(ctx context.Context) BlogRepository
 }
 
 type blogRepository struct {
 	connection db.DatabaseConnection
+	ctx context.Context
 }
 
 type blog struct {
@@ -29,11 +32,11 @@ type blog struct {
 }
 
 func NewBlogRepository(connection db.DatabaseConnection) BlogRepository {
-	return blogRepository{connection: connection}
+	return blogRepository{connection: connection, ctx: context.Background()}
 }
 
 func (br blogRepository) blogTable() upper.Collection {
-	return br.connection.Connection().Collection("blog")
+	return br.connection.ConnectionWithContext(br.ctx).Collection("blog")
 }
 
 func (br blogRepository) FindByIdentity(id domain.Identity) (entity.Blog, error) {
@@ -111,4 +114,10 @@ func (br blogRepository) deflateBlogEntity(b entity.Blog) blog {
 	bb.ID = b.Identity().Identity().(string)
 	bb.Name = b.Name()
 	return bb
+}
+
+
+func (br blogRepository) WithContext(ctx context.Context) BlogRepository {
+	br.ctx = ctx
+	return br
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/duhruh/blog/app/blog/entity"
 	"github.com/duhruh/blog/app/blog/repository"
 
+	"context"
 	"github.com/duhruh/tackle/domain"
 )
 
@@ -21,17 +22,20 @@ type Service interface {
 	ShowPost(id domain.Identity) (entity.Post, error)
 	ListPosts(blog entity.Blog) ([]entity.Post, error)
 	CreatePost(blog entity.Blog, body string) (entity.Post, error)
+	WithContext(ctx context.Context) Service
 }
 
 type service struct {
 	blogRepository repository.BlogRepository
 	postRepository repository.PostRepository
+	ctx            context.Context
 }
 
 func newService(blogRepo repository.BlogRepository, postRepo repository.PostRepository) service {
 	return service{
 		blogRepository: blogRepo,
 		postRepository: postRepo,
+		ctx:            context.Background(),
 	}
 }
 
@@ -48,7 +52,7 @@ func (s service) ShowBlog(id domain.Identity) (entity.Blog, error) {
 }
 
 func (s service) ListBlogs() ([]entity.Blog, error) {
-	return s.blogRepository.All()
+	return s.blog().All()
 }
 
 func (s service) CreateBlog(name string) (entity.Blog, error) {
@@ -87,4 +91,13 @@ func (s service) CreatePost(blog entity.Blog, body string) (entity.Post, error) 
 	post.SetBlog(blog)
 
 	return s.postRepository.Create(post), nil
+}
+
+func (s service) blog() repository.BlogRepository {
+	return s.blogRepository.WithContext(s.ctx)
+}
+
+func (s service) WithContext(ctx context.Context) Service {
+	s.ctx = ctx
+	return s
 }

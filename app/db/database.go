@@ -1,13 +1,19 @@
 package db
 
 import (
+	"context"
 	"errors"
+	errors2 "github.com/duhruh/blog/app/errors"
 	"github.com/duhruh/blog/config"
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
+	"regexp"
+	"upper.io/db.v3"
 	"upper.io/db.v3/lib/sqlbuilder"
 	"upper.io/db.v3/mysql"
 )
 
-func NewDatabaseConnection(config config.ApplicationConfig) DatabaseConnection {
+func NewDatabaseConnection(config config.ApplicationConfig, logger log.Logger) DatabaseConnection {
 	settings := config.DatabaseConnection()
 	conn := mysql.ConnectionURL{
 		Host:     settings.Get("host").(string),
@@ -18,6 +24,7 @@ func NewDatabaseConnection(config config.ApplicationConfig) DatabaseConnection {
 
 	return &databaseConnection{
 		connectionUrl: conn,
+		logger:        logger,
 	}
 }
 
@@ -25,11 +32,13 @@ type DatabaseConnection interface {
 	ConnectionURL() mysql.ConnectionURL
 	Open() sqlbuilder.Database
 	Connection() sqlbuilder.Database
+	ConnectionWithContext(cxt context.Context) sqlbuilder.Database
 }
 
 type databaseConnection struct {
 	connectionUrl mysql.ConnectionURL
 	session       sqlbuilder.Database
+	logger        log.Logger
 }
 
 func (db *databaseConnection) ConnectionURL() mysql.ConnectionURL {
@@ -42,14 +51,38 @@ func (db *databaseConnection) Open() sqlbuilder.Database {
 		panic(err)
 	}
 
+	sess.SetLogging(true)
+	sess.SetLogger(db)
+
 	db.session = sess
 
 	return db.session
 }
 
 func (db *databaseConnection) Connection() sqlbuilder.Database {
+	return db.ConnectionWithContext(context.Background())
+}
+
+func (db *databaseConnection) Log(q *db.QueryStatus) {
+	var re = regexp.MustCompile(`[\n\t\s]+`)
+	s := re.ReplaceAllString(q.Query, " ")
+	err := q.Err
+	if err != nil {
+		err = errors2.New(err)
+	}
+
+	level.Debug(db.logger).Log(
+		"query", s,
+		"took", q.End.Sub(q.Start),
+		"error", err,
+		"trace", errors2.StackTrace(err),
+		"count", q.Context.Value("count"),
+	)
+}
+
+func (db *databaseConnection) ConnectionWithContext(cxt context.Context) sqlbuilder.Database {
 	if db.session == nil {
 		panic(errors.New("nope"))
 	}
-	return db.session
+	return db.session.WithContext(cxt)
 }
