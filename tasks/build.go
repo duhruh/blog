@@ -46,9 +46,12 @@ func (t BuildTask) Run(w io.Writer) {
 	build, err := t.GetOption(t.options, "build")
 	ve, err := t.GetOption(t.options, "version")
 	dir, err := t.GetArgument(t.arguments, "output")
-	outBinName := fmt.Sprintf("%s/go-bin-%s", dir.Value(), time.Now().UTC().Format(time.RFC3339Nano))
+	if err != nil {
+		panic(err)
+	}
 
 	var (
+		outBinName  = fmt.Sprintf("%s/%s_blog", dir.Value(), time.Now().UTC().Format("20060102"))
 		gc, _       = exec.Command("git", "rev-parse", "--short", "HEAD").Output()
 		buildNumber = build.Value().(string)
 		version     = ve.Value().(string)

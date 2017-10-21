@@ -2,10 +2,13 @@ package entity
 
 import "github.com/duhruh/tackle/domain"
 
-type Blog interface {
+type ImmutableBlog interface {
 	Identity() domain.Identity
 	Posts() []Post
 	Name() string
+}
+type Blog interface {
+	ImmutableBlog
 	SetName(name string)
 	SetIdentity(id domain.Identity)
 	AddPost(post Post)

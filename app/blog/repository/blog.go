@@ -9,8 +9,9 @@ import (
 	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/tackle/domain"
 
-	upper "upper.io/db.v3"
 	"context"
+	"github.com/duhruh/blog/app/blog/factory"
+	upper "upper.io/db.v3"
 )
 
 type BlogRepository interface {
@@ -23,16 +24,12 @@ type BlogRepository interface {
 
 type blogRepository struct {
 	connection db.DatabaseConnection
-	ctx context.Context
+	factory    factory.BlogFactory
+	ctx        context.Context
 }
 
-type blog struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
-}
-
-func NewBlogRepository(connection db.DatabaseConnection) BlogRepository {
-	return blogRepository{connection: connection, ctx: context.Background()}
+func NewBlogRepository(connection db.DatabaseConnection, factory factory.BlogFactory) BlogRepository {
+	return blogRepository{connection: connection, ctx: context.Background(), factory: factory}
 }
 
 func (br blogRepository) blogTable() upper.Collection {
@@ -41,17 +38,15 @@ func (br blogRepository) blogTable() upper.Collection {
 
 func (br blogRepository) FindByIdentity(id domain.Identity) (entity.Blog, error) {
 	var b blog
-	var rb entity.Blog
-	rb = entity.NewBlog()
 
 	res := br.blogTable().Find(upper.Cond{"id": id.Identity().(string)})
 	err := res.One(&b)
-
 	if err != nil {
+		var rb entity.Blog
 		return rb, err
 	}
 
-	return br.inflateBlogEntity(rb, b), nil
+	return br.factory.BlogFromImmutable(b), nil
 }
 
 func (br blogRepository) Create(b entity.Blog) entity.Blog {
@@ -78,7 +73,7 @@ func (br blogRepository) All() ([]entity.Blog, error) {
 	}
 
 	for _, bb := range b {
-		rb = append(rb, br.inflateBlogEntity(entity.NewBlog(), bb))
+		rb = append(rb, br.factory.BlogFromImmutable(bb))
 	}
 
 	return rb, nil
@@ -103,19 +98,12 @@ func (br blogRepository) Update(b entity.Blog) (entity.Blog, error) {
 	return nope, errors.New("blog not found")
 }
 
-func (br blogRepository) inflateBlogEntity(b entity.Blog, raw blog) entity.Blog {
-	b.SetIdentity(domain.NewIdentity(raw.ID))
-	b.SetName(raw.Name)
-	return b
-}
-
 func (br blogRepository) deflateBlogEntity(b entity.Blog) blog {
 	var bb blog
 	bb.ID = b.Identity().Identity().(string)
-	bb.Name = b.Name()
+	bb.Na = b.Name()
 	return bb
 }
-
 
 func (br blogRepository) WithContext(ctx context.Context) BlogRepository {
 	br.ctx = ctx

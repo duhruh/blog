@@ -7,6 +7,7 @@ import (
 	"github.com/duhruh/blog/app/blog/transport/grpc"
 	"github.com/duhruh/blog/app/blog/transport/http"
 
+	"github.com/duhruh/blog/app/blog/factory"
 	"github.com/duhruh/blog/app/db"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	tacklehttp "github.com/duhruh/tackle/transport/http"
@@ -29,10 +30,10 @@ func NewImplementedService(cxt context.Context, logger log.Logger, connection db
 	fieldKeys := []string{"method"}
 
 	var blogRepo repository.BlogRepository
-	blogRepo = repository.NewBlogRepository(connection)
+	blogRepo = repository.NewBlogRepository(connection, factory.NewBlogFactory())
 
 	var postRepo repository.PostRepository
-	postRepo = repository.NewPostRepository(connection)
+	postRepo = repository.NewPostRepository(connection, factory.NewPostFactory())
 
 	var service Service
 	service = newService(blogRepo, postRepo)

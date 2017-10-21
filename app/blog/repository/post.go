@@ -7,6 +7,7 @@ import (
 	"github.com/duhruh/tackle/domain"
 
 	"context"
+	"github.com/duhruh/blog/app/blog/factory"
 	upper "upper.io/db.v3"
 )
 
@@ -19,17 +20,12 @@ type PostRepository interface {
 
 type postRepository struct {
 	connection db.DatabaseConnection
+	factory    factory.PostFactory
 	ctx        context.Context
 }
 
-type post struct {
-	ID     string `db:"id"`
-	Body   string `db:"body"`
-	BlogId string `db:"blog_id"`
-}
-
-func NewPostRepository(connection db.DatabaseConnection) PostRepository {
-	return postRepository{connection: connection, ctx: context.Background()}
+func NewPostRepository(connection db.DatabaseConnection, factory factory.PostFactory) PostRepository {
+	return postRepository{connection: connection, ctx: context.Background(), factory: factory}
 }
 
 func (br postRepository) postTable() upper.Collection {
@@ -48,7 +44,7 @@ func (br postRepository) FindByIdentity(id domain.Identity) (entity.Post, error)
 		return rb, err
 	}
 
-	return br.inflatePostEntity(rb, b), nil
+	return br.factory.PostFromImmutable(b), nil
 }
 
 func (br postRepository) Create(b entity.Post) entity.Post {
@@ -75,26 +71,17 @@ func (br postRepository) All() []entity.Post {
 	}
 
 	for _, bb := range b {
-		rb = append(rb, br.inflatePostEntity(entity.NewPost(), bb))
+		rb = append(rb, br.factory.PostFromImmutable(bb))
 	}
 
 	return rb
 }
 
-func (br postRepository) inflatePostEntity(b entity.Post, raw post) entity.Post {
-	b.SetIdentity(domain.NewIdentity(raw.ID))
-	b.SetBody(raw.Body)
-	p := entity.NewBlog()
-	p.SetIdentity(domain.NewIdentity(raw.BlogId))
-	b.SetBlog(p)
-	return b
-}
-
 func (br postRepository) deflatePostEntity(b entity.Post) post {
 	var bb post
 	bb.ID = b.Identity().Identity().(string)
-	bb.Body = b.Body()
-	bb.BlogId = b.BlogId().Identity().(string)
+	bb.B = b.Body()
+	bb.Bid = b.BlogId().Identity().(string)
 	return bb
 }
 

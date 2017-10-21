@@ -6,12 +6,12 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/duhruh/tackle/dsnotify"
 	"github.com/duhruh/tackle/task"
 	"github.com/fsnotify/fsnotify"
+	"strconv"
 )
 
 type ServerTask struct {
@@ -25,6 +25,7 @@ type ServerTask struct {
 	currentCommand *exec.Cmd
 	writer         io.Writer
 	outBinName     string
+	buildNumber    int
 }
 
 func NewServerTask() task.Task {
@@ -49,7 +50,7 @@ func (t *ServerTask) Arguments() []task.Argument { return t.arguments }
 func (t *ServerTask) Run(w io.Writer) {
 	t.writer = w
 
-	t.outBinName = fmt.Sprintf("/tmp/go-bin-%s", time.Now().String())
+	t.outBinName = fmt.Sprintf("dist/%s_blog", time.Now().UTC().Format("20060102"))
 
 	t.Say(w, "\nWelcome to Tackle v1.0.0\n")
 
@@ -105,25 +106,16 @@ func (t *ServerTask) compile() {
 	defer func(begin time.Time) {
 		t.Say(t.writer, fmt.Sprintf("time to compile: %v", time.Since(begin)))
 	}(time.Now())
-	var (
-		gitCommit, _ = exec.Command("git", "rev-parse", "--short", "HEAD").Output()
-		buildNumber  = "1"
-		version      = "v1.0.0"
-		buildTime    = time.Now().UTC().Format(time.RFC3339Nano)
-		cfgPkg       = "github.com/duhruh/blog/config"
-	)
 
+	t.buildNumber++
 	cmd := exec.Command(
 		"go",
+		"run",
+		"cmd/task/main.go",
 		"build",
-		"-o",
-		t.outBinName,
-		"-ldflags",
-		""+t.ldflag(cfgPkg, "GitCommit", strings.Trim(string(gitCommit), "\n"))+" "+
-			t.ldflag(cfgPkg, "BuildNumber", buildNumber)+" "+
-			t.ldflag(cfgPkg, "Version", version)+" "+
-			t.ldflag(cfgPkg, "BuildTime", buildTime),
-		"cmd/api/main.go",
+		"--version=v0.0.0-alpha."+strconv.Itoa(t.buildNumber),
+		"--build="+strconv.Itoa(t.buildNumber),
+		"dist/",
 	)
 	cmd.Env = os.Environ()
 	cmd.Stdin = os.Stdin
@@ -156,8 +148,4 @@ func (t *ServerTask) run() {
 func (t *ServerTask) compileAndRun() {
 	t.compile()
 	t.run()
-}
-
-func (t *ServerTask) ldflag(pkg string, variable string, value string) string {
-	return "-X \"" + pkg + "." + variable + "=" + value + "\""
 }

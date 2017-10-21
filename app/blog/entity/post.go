@@ -4,14 +4,16 @@ import (
 	"github.com/duhruh/tackle/domain"
 )
 
-type Post interface {
+type ImmutablePost interface {
 	Identity() domain.Identity
 	Body() string
+	BlogId() domain.Identity
+}
+type Post interface {
+	ImmutablePost
 	SetIdentity(id domain.Identity)
 	SetBody(body string)
-
 	SetBlog(blog Blog)
-	BlogId() domain.Identity
 }
 type post struct {
 	id     domain.Identity
