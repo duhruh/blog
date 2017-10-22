@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    stages {
+    node {
         def root = tool name: 'Go 1.8', type: 'go'
 
         stage('Build') {
