@@ -1,9 +1,7 @@
 pipeline {
     agent any
 
-    node {
-        def root = tool name: 'Go 1.8', type: 'go'
-
+    stages {
         stage('Build') {
             steps {
                 sh 'curl https://glide.sh/get | sh'
