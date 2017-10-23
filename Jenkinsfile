@@ -6,6 +6,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                sh "mkdir -p /go/src/github.com/duhruh"
                 dir("/go/src/github.com/duhruh") {
                     checkout scm
                     dir("/go/src/github.com/duhruh/blog"){
