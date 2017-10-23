@@ -1,12 +1,18 @@
 pipeline {
-    agent { dockerfile true }
+    agent {
+        dockerfile true
+    }
 
     stages {
         stage('Build') {
             steps {
                 sh 'pwd'
-                sh 'glide install'
-                sh "go run cmd/task/main.go build --version=v.0.0.0-alpha.1 --build=${env.BUILD_NUMBER}"
+                sh 'cd /go/src/github.com/blog'
+                sh 'pwd'
+
+                sh 'cd /go/src/github.com/blog && ls'
+                sh 'cd /go/src/github.com/blog && glide install'
+                sh "cd /go/src/github.com/blog && go run cmd/task/main.go build --version=v.0.0.0-alpha.1 --build=${env.BUILD_NUMBER}"
             }
         }
         stage('Test') {

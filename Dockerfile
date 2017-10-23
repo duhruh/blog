@@ -20,6 +20,8 @@ RUN mkdir -p $APP_PKG_PATH
 
 WORKDIR $APP_PKG_PATH
 
+VOLUME $APP_PKG_PATH
+
 ADD glide.yaml $APP_PKG_PATH
 ADD glide.lock $APP_PKG_PATH
 
