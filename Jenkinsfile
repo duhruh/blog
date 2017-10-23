@@ -7,6 +7,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'pwd'
+                sh "go version"
                 sh 'cd /go/src/github.com/blog'
                 sh 'pwd'
 
