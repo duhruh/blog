@@ -8,12 +8,12 @@ pipeline {
             steps {
                 sh 'pwd'
                 sh "go version"
-                sh 'cd /go/src/github.com/blog'
+                sh 'cd /go/src/github.com/duhruh/blog'
                 sh 'pwd'
 
-                sh 'cd /go/src/github.com/blog && ls'
-                sh 'cd /go/src/github.com/blog && glide install'
-                sh "cd /go/src/github.com/blog && go run cmd/task/main.go build --version=v.0.0.0-alpha.1 --build=${env.BUILD_NUMBER}"
+                sh 'cd /go/src/github.com/duhruh/blog && ls'
+                sh 'cd /go/src/github.com/duhruh/blog && glide install'
+                sh "cd /go/src/github.com/duhruh/blog && go run cmd/task/main.go build --version=v.0.0.0-alpha.1 --build=${env.BUILD_NUMBER}"
             }
         }
         stage('Test') {
