@@ -1,4 +1,4 @@
-package: github.com/duhruh/blog
+package: .
 import:
 - package: github.com/duhruh/tackle
   version: master
