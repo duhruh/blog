@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	ErrNoElasticClientProvided = errors.New("no elastic client provided")
 	ErrCannotCreateIndex = errors.New("cannot create index")
 )
 
@@ -20,6 +21,9 @@ func NewElasticSearchLogger(client *elastic.Client, host string, index string, l
 func generateElasticLogger(client *elastic.Client, host string, indexFunc IndexNameFunc, logger log.Logger) (log.Logger, error) {
 	ctx, cancel := context.WithCancel(context.TODO())
 
+	if client == nil {
+		return logger, ErrNoElasticClientProvided
+	}
 	exists, err := client.IndexExists(indexFunc()).Do(ctx)
 	if err != nil {
 		return logger, err

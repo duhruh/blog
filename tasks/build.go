@@ -65,6 +65,7 @@ func (t BuildTask) Run(w io.Writer) {
 		"build",
 		"-o",
 		outBinName,
+		"-i",
 		"-ldflags",
 		""+t.ldflag(cfgPkg, "GitCommit", gitCommit)+" "+
 			t.ldflag(cfgPkg, "BuildNumber", buildNumber)+" "+
