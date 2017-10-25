@@ -1,6 +1,5 @@
 package app
 
-
 import (
 	"context"
 	"sync"
@@ -35,6 +34,7 @@ func NewApplication(cxt context.Context, cfg config.ApplicationConfig, logger lo
 }
 
 func (a *application) Build() {
+	level.Info(a.logger).Log("message", "application booting")
 	defer func(begin time.Time) {
 		level.Info(a.logger).Log("message", `application built`, "took", time.Since(begin))
 	}(time.Now())

@@ -11,8 +11,6 @@ import (
 var (
 	GitCommit string
 
-	Version string
-
 	BuildNumber string
 
 	BuildTime string
@@ -28,4 +26,6 @@ type ApplicationConfig interface {
 	Name() string
 	Host() string
 	GenerateElasticSearchClient() *elastic.Client
+	Version() string
+	Description() string
 }

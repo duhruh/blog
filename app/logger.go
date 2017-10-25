@@ -19,19 +19,18 @@ func NewLogger(c config.ApplicationConfig) log.Logger {
 	if err != nil {
 		level.Error(logger).Log("error", err)
 	}
+
 	logger = level.NewFilter(logger, c.LogOption())
 	logger = log.With(
 		logger,
 		"timestamp", log.DefaultTimestampUTC,
 		"environment", c.Environment(),
 		"gitCommit", config.GitCommit,
-		"version", config.Version,
+		"version", c.Version(),
 		"buildNumber", config.BuildNumber,
 		"buildTime", config.BuildTime,
 		"caller", log.DefaultCaller,
 	)
-
-	level.Info(logger).Log("message", "application booting")
 
 	return logger
 }

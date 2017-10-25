@@ -8,8 +8,8 @@ import (
 	tackleconfig "github.com/duhruh/tackle/config"
 	"github.com/go-kit/kit/log/level"
 	"gopkg.in/olivere/elastic.v5"
-	"os"
 	"io"
+	"os"
 )
 
 type appConfig struct {
@@ -24,8 +24,7 @@ func NewConfig(env tackle.Environment, raw tackleconfig.Config) config.Applicati
 	}
 }
 
-
-func NewConfigFromYamlFile(env tackle.Environment, file string) config.ApplicationConfig{
+func NewConfigFromYamlFile(env tackle.Environment, file string) config.ApplicationConfig {
 	var r io.Reader
 	r, err := os.Open(file)
 	if err != nil {
@@ -85,6 +84,12 @@ func (c appConfig) Host() string {
 	return host
 }
 
+func (c appConfig) Version() string {
+	return c.Get("version").(string)
+}
+func (c appConfig) Description() string {
+	return c.Get("description").(string)
+}
 func (c appConfig) GenerateElasticSearchClient() *elastic.Client {
 
 	client, err := elastic.NewClient(
