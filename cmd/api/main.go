@@ -5,13 +5,7 @@ import (
 	"flag"
 
 	"github.com/duhruh/tackle"
-	"github.com/go-kit/kit/log"
-
-	"fmt"
 	"github.com/duhruh/blog/app"
-	"github.com/duhruh/blog/config"
-	"github.com/go-kit/kit/log/level"
-	"os"
 )
 
 const (
@@ -33,17 +27,11 @@ func main() {
 
 	logger := app.NewLogger(c)
 
-	if *help {
-		usage(c)
+	if app.Info(c, logger, *help, *version){
 		return
 	}
 
-	if *version {
-		versionInfo(logger)
-		return
-	}
-
-	defer recoverHandler(logger)
+	defer app.RecoverHandler(logger)
 
 	application := app.NewApplication(context.Background(), c, logger)
 
@@ -52,17 +40,4 @@ func main() {
 	application.Start()
 }
 
-func recoverHandler(l log.Logger) {
-	if r := recover(); r != nil {
-		l.Log("panic", r)
-	}
-}
 
-func usage(c config.ApplicationConfig) {
-	use := c.Description()
-	fmt.Fprintf(os.Stderr, "Usage of blog [options]:\n\n%s\n\n", use)
-	flag.PrintDefaults()
-}
-func versionInfo(logger log.Logger) {
-	level.Debug(logger).Log("message", "version info")
-}
