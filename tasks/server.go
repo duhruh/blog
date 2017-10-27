@@ -11,8 +11,14 @@ import (
 	"github.com/duhruh/tackle/dsnotify"
 	"github.com/duhruh/tackle/task"
 	"github.com/fsnotify/fsnotify"
+	"io/ioutil"
+	"path/filepath"
+	"sort"
 	"strconv"
+	"strings"
 )
+
+const DefaultDistDir = "dist"
 
 type ServerTask struct {
 	task.Helpers
@@ -50,8 +56,6 @@ func (t *ServerTask) Arguments() []task.Argument { return t.arguments }
 func (t *ServerTask) Run(w io.Writer) {
 	t.writer = w
 
-	t.outBinName = fmt.Sprintf("dist/%s_blog", time.Now().UTC().Format("20060102"))
-
 	t.Say(w, "\nWelcome to Tackle v1.0.0\n")
 
 	option, _ := t.GetOption(t.options, "watch")
@@ -75,6 +79,49 @@ func (t *ServerTask) Run(w io.Writer) {
 	go t.compileAndRun()
 
 	directoryWatcher.Watch(dsnotify.DirectoryFunc(t.fileChangeEvent))
+}
+
+type ByFileDateName []string
+
+func (s ByFileDateName) Len() int {
+	return len(s)
+}
+func (s ByFileDateName) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s ByFileDateName) Less(i, j int) bool {
+
+	aFile := s.getDateFromFileName(s[i])
+	bFile := s.getDateFromFileName(s[j])
+
+	return aFile.After(bFile)
+}
+
+func (s ByFileDateName) getDateFromFileName(name string) time.Time {
+	parts := strings.Split(name, "_")
+
+	t, err := time.Parse(BuildTimeDateFormat, parts[0])
+	if err != nil {
+		panic(err)
+	}
+
+	return t
+}
+
+func (t *ServerTask) getBinName() string {
+	files, err := ioutil.ReadDir(DefaultDistDir)
+	if err != nil {
+		panic(err)
+	}
+
+	var fileNames []string
+	for _, file := range files {
+		fileNames = append(fileNames, file.Name())
+	}
+
+	sort.Sort(ByFileDateName(fileNames))
+
+	return fileNames[0]
 }
 
 func (t *ServerTask) fileChangeEvent(e *fsnotify.Event, err error) {
@@ -115,7 +162,7 @@ func (t *ServerTask) compile() {
 		"build",
 		"--version=v0.0.0-alpha."+strconv.Itoa(t.buildNumber),
 		"--build="+strconv.Itoa(t.buildNumber),
-		"dist/",
+		DefaultDistDir,
 	)
 	cmd.Env = os.Environ()
 	cmd.Stdin = os.Stdin
@@ -130,7 +177,7 @@ func (t *ServerTask) compile() {
 func (t *ServerTask) run() {
 	t.Say(t.writer, "") // newline
 	t.currentCommand = exec.Command(
-		t.outBinName,
+		filepath.Join(DefaultDistDir, t.getBinName()),
 		"-config=config/app.yml",
 		"-environment=development",
 	)

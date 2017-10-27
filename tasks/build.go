@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+const (
+	BuildTimeDateFormat = "20060102150405"
+)
+
 type BuildTask struct {
 	task.Helpers
 	shortDescription string
@@ -51,7 +55,7 @@ func (t BuildTask) Run(w io.Writer) {
 	}
 
 	var (
-		outBinName  = fmt.Sprintf("%s/%s_blog", dir.Value(), time.Now().UTC().Format("20060102"))
+		outBinName  = fmt.Sprintf("%s/%s_blog", dir.Value(), time.Now().UTC().Format(BuildTimeDateFormat))
 		gc, _       = exec.Command("git", "rev-parse", "--short", "HEAD").Output()
 		buildNumber = build.Value().(string)
 		version     = config.Version()
