@@ -4,6 +4,8 @@ version: v0.0.1
 
 description: Blog application
 
+log_path: ./logs/blog.log
+
 database:
   include>: config/database.yml
 
@@ -13,7 +15,7 @@ http:
 grpc:
   port: 8082
 
-elasticsearch:
-  host: "http://elasticsearch:9200"
-  username: "elastic"
-  password: "changeme"
+#elasticsearch:
+#  host: "http://elasticsearch:9200"
+#  username: "elastic"
+#  password: "changeme"

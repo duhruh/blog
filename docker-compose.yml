@@ -14,38 +14,47 @@ services:
       - frontend
       - backend
 
+#  filebeat:
+#    build:
+#      context: ./docker/filebeat
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ${FILEBEAT_CONFIG}:/usr/share/filebeat/filebeat.yml
+#      - ${LOG_PATH}:/mnt/log
+#    networks:
+#      - backend
 #  logstash:
 #    image: docker.elastic.co/logstash/logstash:5.6.3
 #    networks:
 #      - backend
-#  kibana:
-#    image: docker.elastic.co/kibana/kibana:5.6.2
-#    ports:
-#      - "${KIBANA_HTTP_PORT}:5601"
-#    depends_on:
-#      - elasticsearch
-#    networks:
-#      - frontend
-#      - backend
-#
-#  elasticsearch:
-#    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.2
-#    volumes:
-#      - elasticsearch-data:/usr/share/elasticsearch/data
-#      - elasticsearch-plugins:/usr/share/elasticsearch/plugins
-#    environment:
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    ports:
-#      - "${ELASTICSEARCH_HOST_HTTP_PORT}:9200"
-#      - "${ELASTICSEARCH_HOST_TRANSPORT_PORT}:9300"
-#    networks:
-#      - frontend
-#      - backend
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.6.2
+    ports:
+      - "${KIBANA_HTTP_PORT}:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - frontend
+      - backend
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.2
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-plugins:/usr/share/elasticsearch/plugins
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "${ELASTICSEARCH_HOST_HTTP_PORT}:9200"
+      - "${ELASTICSEARCH_HOST_TRANSPORT_PORT}:9300"
+    networks:
+      - frontend
+      - backend
 
   mysql:
     image: mysql

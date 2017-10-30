@@ -1,0 +1,47 @@
+filebeat.prospectors:
+- input_type: log
+  paths:
+    - /mnt/log/*.log
+
+- input_type: log
+  paths:
+    - /mnt/log/blog.log
+  tags: ["json"]
+  json.keys_under_root: true
+  json.add_error_key: true
+
+#processors:
+#- add_cloud_metadata:
+
+output.elasticsearch:
+  hosts: ['elasticsearch:9200']
+  username: elastic
+  password: changeme
+  template.overwrite: true
+  template.path: "my.template.json"
+logging:
+  level: warning
+  to_files: true
+  files:
+    path: /mnt/log/filebeat
+    name: beat.log
+    keepfiles: 7
+    rotateeverybytes: 10485760 # 10 MB
+  level: debug
+  selectors: ["*"]
+
+
+#filebeat.prospectors:
+#- type: log
+#  paths:
+#   - '/var/lib/docker/containers/*/*.log'
+#  json.message_key: log
+#  json.keys_under_root: true
+#  processors:
+#  - add_docker_metadata:
+#        host: "tcp://localhost:2375"
+#
+#output.elasticsearch:
+#  hosts: ['elasticsearch:9200']
+#  username: elastic
+#  password: changeme

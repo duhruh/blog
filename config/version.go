@@ -28,4 +28,5 @@ type ApplicationConfig interface {
 	GenerateElasticSearchClient() *elastic.Client
 	Version() string
 	Description() string
+	LogFile() string
 }

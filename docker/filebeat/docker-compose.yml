@@ -1,0 +1,15 @@
+version: '3'
+services:
+
+  filebeat:
+    build: .
+    volumes:
+     - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+     - ../../logs:/mnt/log
+     - ./filebeat.template.json:/usr/share/filebeat/my.template.json
+    tty: true
+
+networks:
+  default:
+    external:
+      name: blog_backend

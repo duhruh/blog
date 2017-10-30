@@ -7,6 +7,7 @@ import (
 
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/metrics"
+	"context"
 )
 
 type instrumentingService struct {
@@ -80,4 +81,8 @@ func (s *instrumentingService) UpdateBlog(blog entity.Blog) (_ entity.Blog, err 
 		s.requestLatency.With("method", "UpdateBlog").Observe(time.Since(begin).Seconds())
 	}(time.Now())
 	return s.Service.UpdateBlog(blog)
+}
+func (s *instrumentingService) WithContext(ctx context.Context) Service {
+	s.Service = s.Service.WithContext(ctx)
+	return s
 }

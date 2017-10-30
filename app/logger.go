@@ -16,6 +16,7 @@ func NewLogger(c config.ApplicationConfig) log.Logger {
 	var logger log.Logger
 	logger = log.NewLogfmtLogger(applog.NewColorWriter(log.NewSyncWriter(os.Stderr)))
 	logger = level.NewFilter(logger, c.LogOption())
+	logger = applog.NewFileLogger(c.LogFile(), logger, c)
 	logger = log.With(
 		logger,
 		"timestamp", log.DefaultTimestampUTC,
@@ -27,10 +28,12 @@ func NewLogger(c config.ApplicationConfig) log.Logger {
 		"caller", log.DefaultCaller,
 	)
 
-	logger, err := applog.NewElasticSearchLogger(c.GenerateElasticSearchClient(), c.Host(), c.Name(), logger)
-	if err != nil {
-		level.Warn(logger).Log("error", err)
-	}
+
+
+	//logger, err := applog.NewElasticSearchLogger(c.GenerateElasticSearchClient(), c.Host(), c.Name(), logger)
+	//if err != nil {
+	//	level.Warn(logger).Log("error", err)
+	//}
 
 	return logger
 }

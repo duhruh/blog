@@ -90,6 +90,9 @@ func (c appConfig) Version() string {
 func (c appConfig) Description() string {
 	return c.Get("description").(string)
 }
+func (c appConfig) LogFile() string {
+	return c.Get("log_path").(string)
+}
 func (c appConfig) GenerateElasticSearchClient() *elastic.Client {
 
 	client, err := elastic.NewClient(
