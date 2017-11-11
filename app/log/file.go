@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"bytes"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"os"
 	"github.com/duhruh/blog/config"
 )
@@ -44,6 +45,8 @@ func (fl fileLogger) Log(keyvals ...interface{}) error {
 		case error:
 			v = value.(error).Error()
 			break
+		case level.Value:
+			v = value.(level.Value).String()
 		default:
 			v = value
 		}

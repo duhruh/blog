@@ -27,6 +27,19 @@ services:
 #    image: docker.elastic.co/logstash/logstash:5.6.3
 #    networks:
 #      - backend
+
+  filebeat:
+    build:
+      context: ./docker/filebeat
+      dockerfile: Dockerfile
+    volumes:
+     - ./docker/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+     - ./logs:/mnt/log
+     - ./docker/filebeat/filebeat.template.json:/usr/share/filebeat/my.template.json
+    tty: true
+    networks:
+      - backend
+
   kibana:
     image: docker.elastic.co/kibana/kibana:5.6.2
     ports:
