@@ -29,4 +29,7 @@ type ApplicationConfig interface {
 	Version() string
 	Description() string
 	LogFile() string
+	EntryPoint() string
+	ConfigPath() string
+	TaskEntryPoint() string
 }

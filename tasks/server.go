@@ -3,22 +3,27 @@ package tasks
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
-	"regexp"
-	"time"
-
-	"github.com/duhruh/tackle/dsnotify"
-	"github.com/duhruh/tackle/task"
-	"github.com/fsnotify/fsnotify"
-	"io/ioutil"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/duhruh/blog/app"
+	"github.com/duhruh/blog/config"
+	"github.com/duhruh/tackle"
+	"github.com/duhruh/tackle/dsnotify"
+	"github.com/duhruh/tackle/task"
+	"github.com/fsnotify/fsnotify"
 )
 
-const DefaultDistDir = "dist"
+const (
+	DefaultDistDir = "dist"
+)
 
 type ServerTask struct {
 	task.Helpers
@@ -32,6 +37,8 @@ type ServerTask struct {
 	writer         io.Writer
 	outBinName     string
 	buildNumber    int
+	config         config.ApplicationConfig
+	env            tackle.Environment
 }
 
 func NewServerTask() task.Task {
@@ -55,6 +62,8 @@ func (t *ServerTask) Arguments() []task.Argument { return t.arguments }
 
 func (t *ServerTask) Run(w io.Writer) {
 	t.writer = w
+	t.env = tackle.Development
+	t.config = app.NewConfigFromYamlFile(t.env, configPath)
 
 	t.Say(w, "\nWelcome to Tackle v1.0.0\n")
 
@@ -158,10 +167,9 @@ func (t *ServerTask) compile() {
 	cmd := exec.Command(
 		"go",
 		"run",
-		"cmd/task/main.go",
+		t.config.TaskEntryPoint(),
 		"build",
-		"--version=v0.0.0-alpha."+strconv.Itoa(t.buildNumber),
-		"--build="+strconv.Itoa(t.buildNumber),
+		fmt.Sprintf("--build=%s", strconv.Itoa(t.buildNumber)),
 		DefaultDistDir,
 	)
 	cmd.Env = os.Environ()
@@ -178,8 +186,8 @@ func (t *ServerTask) run() {
 	t.Say(t.writer, "") // newline
 	t.currentCommand = exec.Command(
 		filepath.Join(DefaultDistDir, t.getBinName()),
-		"-config=config/app.yml",
-		"-environment=development",
+		fmt.Sprintf("-config=%s", configPath),
+		fmt.Sprintf("-environment=%v", t.env),
 	)
 	t.currentCommand.Env = os.Environ()
 	t.currentCommand.Stdin = os.Stdin

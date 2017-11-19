@@ -93,6 +93,18 @@ func (c appConfig) Description() string {
 func (c appConfig) LogFile() string {
 	return c.Get("log_path").(string)
 }
+
+func (c appConfig) EntryPoint() string {
+	return c.Get("entry_point").(string)
+}
+
+func (c appConfig) ConfigPath() string {
+	return c.Get("config_path").(string)
+}
+
+func (c appConfig) TaskEntryPoint() string {
+	return c.Get("task_entry_point").(string)
+}
 func (c appConfig) GenerateElasticSearchClient() *elastic.Client {
 
 	client, err := elastic.NewClient(

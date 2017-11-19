@@ -2,18 +2,20 @@ package tasks
 
 import (
 	"fmt"
-	"github.com/duhruh/blog/app"
-	"github.com/duhruh/tackle"
-	"github.com/duhruh/tackle/task"
 	"io"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/duhruh/blog/app"
+	"github.com/duhruh/tackle"
+	"github.com/duhruh/tackle/task"
 )
 
 const (
 	BuildTimeDateFormat = "20060102150405"
+	configPath          = "config/app.yml"
 )
 
 type BuildTask struct {
@@ -47,7 +49,7 @@ func (t BuildTask) Options() []task.Option     { return t.options }
 func (t BuildTask) Arguments() []task.Argument { return t.arguments }
 
 func (t BuildTask) Run(w io.Writer) {
-	config := app.NewConfigFromYamlFile(tackle.Development, "config/app.yml")
+	config := app.NewConfigFromYamlFile(tackle.Development, configPath)
 	build, err := t.GetOption(t.options, "build")
 	dir, err := t.GetArgument(t.arguments, "output")
 	if err != nil {
@@ -55,12 +57,12 @@ func (t BuildTask) Run(w io.Writer) {
 	}
 
 	var (
-		outBinName  = fmt.Sprintf("%s/%s_blog", dir.Value(), time.Now().UTC().Format(BuildTimeDateFormat))
+		outBinName  = fmt.Sprintf("%s/%s_%s", dir.Value(), time.Now().UTC().Format(BuildTimeDateFormat), config.Name())
 		gc, _       = exec.Command("git", "rev-parse", "--short", "HEAD").Output()
 		buildNumber = build.Value().(string)
 		version     = config.Version()
 		buildTime   = time.Now().UTC().Format(time.RFC3339Nano)
-		cfgPkg      = "github.com/duhruh/blog/config"
+		cfgPkg      = config.ConfigPath()
 		gitCommit   = strings.Trim(string(gc), "\n")
 	)
 
@@ -69,13 +71,12 @@ func (t BuildTask) Run(w io.Writer) {
 		"build",
 		"-o",
 		outBinName,
-		"-i",
 		"-ldflags",
 		""+t.ldflag(cfgPkg, "GitCommit", gitCommit)+" "+
 			t.ldflag(cfgPkg, "BuildNumber", buildNumber)+" "+
 			t.ldflag(cfgPkg, "Version", version)+" "+
 			t.ldflag(cfgPkg, "BuildTime", buildTime),
-		"cmd/api/main.go",
+		config.EntryPoint(),
 	)
 	cmd.Env = os.Environ()
 	cmd.Stdin = os.Stdin

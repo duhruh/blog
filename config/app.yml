@@ -4,6 +4,12 @@ version: v0.0.1
 
 description: Blog application
 
+entry_point: cmd/app/main.go
+
+config_path: github.com/duhruh/blog/config
+
+task_entry_point: cmd/task/main.go
+
 log_path: ./logs/blog.log
 
 database:
