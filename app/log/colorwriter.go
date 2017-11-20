@@ -1,15 +1,13 @@
 package log
 
 import (
-	"io"
-
-	"strings"
-
 	"bytes"
 	"fmt"
-	"github.com/fatih/color"
-	//"regexp"
+	"io"
 	"regexp"
+	"strings"
+
+	"github.com/fatih/color"
 )
 
 type colorWriter struct {

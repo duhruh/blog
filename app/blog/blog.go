@@ -3,17 +3,17 @@ package blog
 import (
 	"context"
 
-	"github.com/duhruh/blog/app/blog/repository"
-	"github.com/duhruh/blog/app/blog/transport/grpc"
-	"github.com/duhruh/blog/app/blog/transport/http"
-
-	"github.com/duhruh/blog/app/blog/factory"
-	"github.com/duhruh/blog/app/db"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	tacklehttp "github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
+
+	"github.com/duhruh/blog/app/blog/factory"
+	"github.com/duhruh/blog/app/blog/repository"
+	"github.com/duhruh/blog/app/blog/transport/grpc"
+	"github.com/duhruh/blog/app/blog/transport/http"
+	"github.com/duhruh/blog/app/db"
 )
 
 type App struct {

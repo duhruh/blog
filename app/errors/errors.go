@@ -2,6 +2,7 @@ package errors
 
 import (
 	"errors"
+
 	stack "github.com/go-errors/errors"
 )
 

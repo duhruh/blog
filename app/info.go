@@ -1,16 +1,17 @@
 package app
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"flag"
-	"github.com/duhruh/blog/config"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+
+	"github.com/duhruh/blog/config"
 )
 
-
-func Info(c config.ApplicationConfig, l log.Logger, help bool, version bool) bool{
+func Info(c config.ApplicationConfig, l log.Logger, help bool, version bool) bool {
 	if help {
 		usage(c)
 		return true

@@ -5,13 +5,13 @@ import (
 	"context"
 	"io"
 
-	"github.com/duhruh/blog/app"
-
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/task"
 	"github.com/duhruh/tackle/transport/grpc"
 	"github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
+
+	"github.com/duhruh/blog/app"
 )
 
 type RoutesTask struct {

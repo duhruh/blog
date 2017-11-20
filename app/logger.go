@@ -1,12 +1,13 @@
 package app
 
 import (
-	applog "github.com/duhruh/blog/app/log"
-	"github.com/duhruh/blog/config"
 	"os"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+
+	applog "github.com/duhruh/blog/app/log"
+	"github.com/duhruh/blog/config"
 )
 
 // This is where we define our application logger
@@ -27,13 +28,6 @@ func NewLogger(c config.ApplicationConfig) log.Logger {
 		"buildTime", config.BuildTime,
 		"caller", log.DefaultCaller,
 	)
-
-
-
-	//logger, err := applog.NewElasticSearchLogger(c.GenerateElasticSearchClient(), c.Host(), c.Name(), logger)
-	//if err != nil {
-	//	level.Warn(logger).Log("error", err)
-	//}
 
 	return logger
 }

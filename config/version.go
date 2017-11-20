@@ -4,7 +4,6 @@ import (
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/config"
 	"github.com/go-kit/kit/log/level"
-
 	"gopkg.in/olivere/elastic.v5"
 )
 

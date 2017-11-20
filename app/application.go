@@ -5,19 +5,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/duhruh/blog/app/blog"
-
-	appgrpc "github.com/duhruh/blog/app/transport/grpc"
-
-	apphttp "github.com/duhruh/blog/app/transport/http"
-
-	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/blog/config"
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/transport/grpc"
 	"github.com/duhruh/tackle/transport/http"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+
+	"github.com/duhruh/blog/app/blog"
+	"github.com/duhruh/blog/app/db"
+	appgrpc "github.com/duhruh/blog/app/transport/grpc"
+	apphttp "github.com/duhruh/blog/app/transport/http"
 )
 
 type application struct {

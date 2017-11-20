@@ -5,6 +5,7 @@ import (
 	"flag"
 
 	"github.com/duhruh/tackle"
+
 	"github.com/duhruh/blog/app"
 )
 
@@ -27,7 +28,7 @@ func main() {
 
 	logger := app.NewLogger(c)
 
-	if app.Info(c, logger, *help, *version){
+	if app.Info(c, logger, *help, *version) {
 		return
 	}
 
@@ -39,5 +40,3 @@ func main() {
 
 	application.Start()
 }
-
-

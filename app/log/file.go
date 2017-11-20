@@ -1,38 +1,35 @@
 package log
 
 import (
-	"io"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
+	"io"
+	"os"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"os"
+
 	"github.com/duhruh/blog/config"
 )
 
-func NewFileLogger(file string, l log.Logger, c config.ApplicationConfig) log.Logger{
+func NewFileLogger(file string, l log.Logger, c config.ApplicationConfig) log.Logger {
 	f, _ := os.OpenFile(file, os.O_WRONLY|os.O_CREATE, 0666)
-	return fileLogger{file:f, next:l, config: c}
+	return fileLogger{file: f, next: l, config: c}
 }
-
-
 
 type fileLogger struct {
-	file io.Writer
-	next log.Logger
+	file   io.Writer
+	next   log.Logger
 	config config.ApplicationConfig
 }
-
-
 
 func (fl fileLogger) Log(keyvals ...interface{}) error {
 	var msg map[string]interface{}
 	msg = make(map[string]interface{})
 
-
 	for i := 0; i < len(keyvals); i += 2 {
 		var (
-			key = keyvals[i].(string)
+			key   = keyvals[i].(string)
 			value = keyvals[i+1]
 		)
 
@@ -68,4 +65,3 @@ func (fl fileLogger) Log(keyvals ...interface{}) error {
 
 	return fl.next.Log(keyvals...)
 }
-

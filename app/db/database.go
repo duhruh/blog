@@ -3,14 +3,16 @@ package db
 import (
 	"context"
 	"errors"
-	errors2 "github.com/duhruh/blog/app/errors"
-	"github.com/duhruh/blog/config"
+	"regexp"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"regexp"
 	"upper.io/db.v3"
 	"upper.io/db.v3/lib/sqlbuilder"
 	"upper.io/db.v3/mysql"
+
+	errors2 "github.com/duhruh/blog/app/errors"
+	"github.com/duhruh/blog/config"
 )
 
 func NewDatabaseConnection(config config.ApplicationConfig, logger log.Logger) DatabaseConnection {

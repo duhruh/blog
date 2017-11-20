@@ -1,20 +1,20 @@
 package blog
 
 import (
+	"context"
 	"time"
 
-	"github.com/duhruh/blog/app/blog/entity"
-
-	"github.com/duhruh/blog/app/errors"
 	"github.com/duhruh/tackle/domain"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"context"
+
+	"github.com/duhruh/blog/app/blog/entity"
+	"github.com/duhruh/blog/app/errors"
 )
 
 type loggingService struct {
 	logger log.Logger
-	next Service
+	next   Service
 }
 
 // NewLoggingService returns a new instance of a logging Service.

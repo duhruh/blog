@@ -1,15 +1,16 @@
 package app
 
 import (
+	"io"
+	"os"
 	"strconv"
 
-	"github.com/duhruh/blog/config"
 	"github.com/duhruh/tackle"
 	tackleconfig "github.com/duhruh/tackle/config"
 	"github.com/go-kit/kit/log/level"
 	"gopkg.in/olivere/elastic.v5"
-	"io"
-	"os"
+
+	"github.com/duhruh/blog/config"
 )
 
 type appConfig struct {

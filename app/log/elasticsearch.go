@@ -3,13 +3,14 @@ package log
 import (
 	"context"
 	"errors"
+
 	"github.com/go-kit/kit/log"
 	"gopkg.in/olivere/elastic.v5"
 )
 
 var (
 	ErrNoElasticClientProvided = errors.New("no elastic client provided")
-	ErrCannotCreateIndex = errors.New("cannot create index")
+	ErrCannotCreateIndex       = errors.New("cannot create index")
 )
 
 type IndexNameFunc func() string

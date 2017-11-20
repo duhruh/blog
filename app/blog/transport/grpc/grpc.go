@@ -1,14 +1,14 @@
 package grpc
 
 import (
-	"github.com/duhruh/blog/app/blog/proto"
-
 	"github.com/duhruh/tackle"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	"github.com/go-kit/kit/log"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+
+	"github.com/duhruh/blog/app/blog/proto"
 )
 
 type grpcTransport struct {

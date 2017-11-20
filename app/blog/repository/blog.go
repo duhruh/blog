@@ -1,17 +1,16 @@
 package repository
 
 import (
+	"context"
 	"errors"
 
-	"github.com/duhruh/blog/app/blog/entity"
-	blogerror "github.com/duhruh/blog/app/errors"
-
-	"github.com/duhruh/blog/app/db"
 	"github.com/duhruh/tackle/domain"
-
-	"context"
-	"github.com/duhruh/blog/app/blog/factory"
 	upper "upper.io/db.v3"
+
+	"github.com/duhruh/blog/app/blog/entity"
+	"github.com/duhruh/blog/app/blog/factory"
+	"github.com/duhruh/blog/app/db"
+	blogerror "github.com/duhruh/blog/app/errors"
 )
 
 type BlogRepository interface {

@@ -13,12 +13,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/duhruh/blog/app"
-	"github.com/duhruh/blog/config"
 	"github.com/duhruh/tackle"
 	"github.com/duhruh/tackle/dsnotify"
 	"github.com/duhruh/tackle/task"
 	"github.com/fsnotify/fsnotify"
+
+	"github.com/duhruh/blog/app"
+	"github.com/duhruh/blog/config"
 )
 
 const (

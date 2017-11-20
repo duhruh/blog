@@ -1,13 +1,13 @@
 package blog
 
 import (
+	"context"
 	"errors"
+
+	"github.com/duhruh/tackle/domain"
 
 	"github.com/duhruh/blog/app/blog/entity"
 	"github.com/duhruh/blog/app/blog/repository"
-
-	"context"
-	"github.com/duhruh/tackle/domain"
 )
 
 var ErrBlogNotFound = errors.New("blog not found")

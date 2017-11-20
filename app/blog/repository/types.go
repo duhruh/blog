@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/duhruh/blog/app/blog/entity"
 	"github.com/duhruh/tackle/domain"
+
+	"github.com/duhruh/blog/app/blog/entity"
 )
 
 type blog struct {

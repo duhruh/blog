@@ -1,14 +1,14 @@
 package repository
 
 import (
-	"github.com/duhruh/blog/app/blog/entity"
-
-	"github.com/duhruh/blog/app/db"
-	"github.com/duhruh/tackle/domain"
-
 	"context"
-	"github.com/duhruh/blog/app/blog/factory"
+
+	"github.com/duhruh/tackle/domain"
 	upper "upper.io/db.v3"
+
+	"github.com/duhruh/blog/app/blog/entity"
+	"github.com/duhruh/blog/app/blog/factory"
+	"github.com/duhruh/blog/app/db"
 )
 
 type PostRepository interface {

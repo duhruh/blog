@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/duhruh/blog/tasks"
-
 	"github.com/duhruh/tackle/task"
+
+	"github.com/duhruh/blog/tasks"
 )
 
 func main() {
