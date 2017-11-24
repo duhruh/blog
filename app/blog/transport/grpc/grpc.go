@@ -51,5 +51,6 @@ func (gt grpcTransport) ListBlogs(ctx context.Context, req *proto.ListBlogsReque
 	if err != nil {
 		return nil, err
 	}
+
 	return rep.(*proto.ListBlogsResponse), nil
 }

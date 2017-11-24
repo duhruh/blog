@@ -13,7 +13,14 @@ import (
 )
 
 func NewFileLogger(file string, l log.Logger, c config.ApplicationConfig) log.Logger {
-	f, _ := os.OpenFile(file, os.O_WRONLY|os.O_CREATE, 0666)
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		os.Mkdir(file, 0666)
+	}
+
+	f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
+	}
 	return fileLogger{file: f, next: l, config: c}
 }
 

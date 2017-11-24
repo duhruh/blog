@@ -3,6 +3,8 @@ package grpc
 import (
 	"context"
 
+	"github.com/duhruh/blog/app/blog/entity"
+	"github.com/duhruh/blog/app/blog/proto"
 	"github.com/duhruh/tackle"
 	tacklegrpc "github.com/duhruh/tackle/transport/grpc"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
@@ -34,6 +36,26 @@ func (hs encoderFactory) listBlogsRequest() kitgrpc.DecodeRequestFunc {
 
 func (hs encoderFactory) listBlogsResponse() kitgrpc.EncodeResponseFunc {
 	return kitgrpc.EncodeResponseFunc(func(_ context.Context, grpcReply interface{}) (interface{}, error) {
-		return tackle.NewPacket(), nil
+		pkt := grpcReply.(tackle.Packet)
+		er := pkt.Get("error")
+		if er != nil {
+			return nil, er.(error)
+		}
+
+		data := pkt.Get("data")
+
+		blogs := data.([]entity.Blog)
+
+		var protoBlogs []*proto.Blog
+		for _, b := range blogs {
+			protoBlog := &proto.Blog{
+				Id:   b.Identity().Identity().(string),
+				Name: b.Name(),
+			}
+
+			protoBlogs = append(protoBlogs, protoBlog)
+
+		}
+		return &proto.ListBlogsResponse{Blogs: protoBlogs}, nil
 	})
 }

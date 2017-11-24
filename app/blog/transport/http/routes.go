@@ -1,6 +1,8 @@
 package http
 
 import (
+	"fmt"
+
 	tacklehttp "github.com/duhruh/tackle/transport/http"
 )
 
@@ -22,32 +24,32 @@ func getRoutes() []tacklehttp.Route {
 		),
 		tacklehttp.NewRoute(
 			"PUT",
-			"/blogs/{id:"+uuidRegex+"}",
+			fmt.Sprintf("/blogs/{id:%s}", uuidRegex),
 			"UpdateBlogEndpoint",
 			"UpdateBlogEncoder",
 		),
 		tacklehttp.NewRoute(
 			"GET",
-			"/blogs/{id:"+uuidRegex+"}",
+			fmt.Sprintf("/blogs/{id:%s}", uuidRegex),
 			"ShowBlogEndpoint",
 			"ShowBlogEncoder",
 		),
 
 		tacklehttp.NewRoute(
 			"GET",
-			"/blogs/{id:"+uuidRegex+"}/posts",
+			fmt.Sprintf("/blogs/{id:%s}/posts", uuidRegex),
 			"ListPostsEndpoint",
 			"ListPostsEncoder",
 		),
 		tacklehttp.NewRoute(
 			"POST",
-			"/blogs/{id:"+uuidRegex+"}/posts",
+			fmt.Sprintf("/blogs/{id:%s}/posts", uuidRegex),
 			"CreatePostEndpoint",
 			"CreatePostEncoder",
 		),
 		tacklehttp.NewRoute(
 			"GET",
-			"/posts/{id:"+uuidRegex+"}",
+			fmt.Sprintf("/posts/{id:%s}", uuidRegex),
 			"ShowPostEndpoint",
 			"ShowPostEncoder",
 		),
