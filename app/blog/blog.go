@@ -56,8 +56,11 @@ func NewImplementedService(cxt context.Context, logger log.Logger, connection db
 
 	endpointFactory := newEndpointFactory(service)
 
-	httpTransport := http.NewHttpTransport(endpointFactory, log.With(logger, "component", "http"))
-	grpcTransport := grpc.NewGrpcTransport(endpointFactory, log.With(logger, "component", "grpc"))
+	httpEncoderFactory := http.NewEncoderFactory(http.NewSerializer())
+	httpTransport := http.NewHttpTransport(endpointFactory, httpEncoderFactory, log.With(logger, "component", "http"))
+
+	grpcEncoderFactory := grpc.NewEncoderFactory(grpc.NewSerializer())
+	grpcTransport := grpc.NewGrpcTransport(endpointFactory, grpcEncoderFactory, log.With(logger, "component", "grpc"))
 
 	return App{
 		service:       service,

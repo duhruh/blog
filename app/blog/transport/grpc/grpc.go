@@ -18,11 +18,11 @@ type grpcTransport struct {
 	handlers        map[string]kitgrpc.Handler
 }
 
-func NewGrpcTransport(endpointFactory tackle.EndpointFactory, logger log.Logger) tacklegrpc.GrpcTransport {
+func NewGrpcTransport(endpointFactory tackle.EndpointFactory, encoderFactory tacklegrpc.EncoderFactory, logger log.Logger) tacklegrpc.GrpcTransport {
 	return grpcTransport{
 		logger:          logger,
 		endpointFactory: endpointFactory,
-		encoderFactory:  NewEncoderFactory(),
+		encoderFactory:  encoderFactory,
 		handlers:        make(map[string]kitgrpc.Handler),
 	}
 
@@ -47,7 +47,7 @@ func (gt grpcTransport) Handlers() []tacklegrpc.Handler {
 }
 
 func (gt grpcTransport) ListBlogs(ctx context.Context, req *proto.ListBlogsRequest) (*proto.ListBlogsResponse, error) {
-	_, rep, err := gt.handlers["BlogService.listBlogs"].ServeGRPC(ctx, req)
+	_, rep, err := gt.handlers[BlogServiceListBlogs].ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}

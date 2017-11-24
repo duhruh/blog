@@ -17,9 +17,9 @@ type httpTransport struct {
 	logger          log.Logger
 }
 
-func NewHttpTransport(endpointFactory tackle.EndpointFactory, logger log.Logger) tacklehttp.HttpTransport {
+func NewHttpTransport(endpointFactory tackle.EndpointFactory, encoderFactory tacklehttp.EncoderFactory, logger log.Logger) tacklehttp.HttpTransport {
 	return httpTransport{
-		encoderFactory:  NewEncoderFactory(),
+		encoderFactory:  encoderFactory,
 		endpointFactory: endpointFactory,
 		logger:          logger,
 	}

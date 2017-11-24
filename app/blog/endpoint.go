@@ -26,14 +26,9 @@ func (ef endpointFactory) Generate(end string) (endpoint.Endpoint, error) {
 	return ef.EndpointFactory.GenerateWithInstance(ef, end)
 }
 
-var uhh = 0
-
 func (ef endpointFactory) ListBlogsEndpoint() endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		uhh += 1
-		c := context.WithValue(ctx, "count", uhh)
-		s := ef.service.WithContext(c)
-		r, err := s.ListBlogs()
+		r, err := ef.service.ListBlogs()
 
 		pkt := tackle.NewPacket()
 		pkt.Put("data", r)
@@ -49,7 +44,10 @@ func (ef endpointFactory) ShowBlogEndpoint() endpoint.Endpoint {
 		id := domain.NewIdentity(packet.Get("id"))
 		r, err := ef.service.ShowBlog(id)
 
-		return r, err
+		pkt := tackle.NewPacket()
+		pkt.Put("data", r)
+		pkt.Put("error", err)
+		return pkt, nil
 	}
 }
 
@@ -59,7 +57,10 @@ func (ef endpointFactory) CreateBlogEndpoint() endpoint.Endpoint {
 
 		r, err := ef.service.CreateBlog(packet.Get("name").(string))
 
-		return r, err
+		pkt := tackle.NewPacket()
+		pkt.Put("data", r)
+		pkt.Put("error", err)
+		return pkt, nil
 	}
 }
 
@@ -72,7 +73,10 @@ func (ef endpointFactory) ListPostsEndpoint() endpoint.Endpoint {
 
 		r, err := ef.service.ListPosts(blog)
 
-		return r, err
+		pkt := tackle.NewPacket()
+		pkt.Put("data", r)
+		pkt.Put("error", err)
+		return pkt, nil
 	}
 }
 func (ef endpointFactory) ShowPostEndpoint() endpoint.Endpoint {
@@ -83,7 +87,10 @@ func (ef endpointFactory) ShowPostEndpoint() endpoint.Endpoint {
 		id := domain.NewIdentity(packet.Get("id"))
 		r, err := ef.service.ShowPost(id)
 
-		return r, err
+		pkt := tackle.NewPacket()
+		pkt.Put("data", r)
+		pkt.Put("error", err)
+		return pkt, nil
 	}
 }
 
@@ -96,7 +103,10 @@ func (ef endpointFactory) CreatePostEndpoint() endpoint.Endpoint {
 
 		r, err := ef.service.CreatePost(blog, packet.Get("body").(string))
 
-		return r, err
+		pkt := tackle.NewPacket()
+		pkt.Put("data", r)
+		pkt.Put("error", err)
+		return pkt, nil
 	}
 }
 

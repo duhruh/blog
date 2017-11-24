@@ -16,11 +16,14 @@ import (
 
 type encoderFactory struct {
 	tacklehttp.EncoderFactory
+
+	serializer Serializer
 }
 
-func NewEncoderFactory() tacklehttp.EncoderFactory {
+func NewEncoderFactory(s Serializer) tacklehttp.EncoderFactory {
 	return encoderFactory{
 		EncoderFactory: tacklehttp.NewEncoderFactory(),
+		serializer:     s,
 	}
 }
 
@@ -42,26 +45,7 @@ func (hs encoderFactory) createBlogRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) createBlogResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
-		//}
-		blog := response.(entity.Blog)
-
-		bjson := struct {
-			Id   string `json:"id"`
-			Name string `json:"name"`
-		}{
-			Id:   blog.Identity().Identity().(string),
-			Name: blog.Name(),
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(bjson)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.blogResponse))
 }
 
 func (hs encoderFactory) ShowBlogEncoder() tacklehttp.Encoder {
@@ -78,27 +62,7 @@ func (hs encoderFactory) showBlogRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) showBlogResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
-		//}
-
-		blog := response.(entity.Blog)
-
-		bjson := struct {
-			Id   string `json:"id"`
-			Name string `json:"name"`
-		}{
-			Id:   blog.Identity().Identity().(string),
-			Name: blog.Name(),
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(bjson)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.blogResponse))
 }
 
 func (hs encoderFactory) ListBlogsEncoder() tacklehttp.Encoder {
@@ -112,36 +76,7 @@ func (hs encoderFactory) listBlogsRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) listBlogsResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		data := response.(tackle.Packet)
-		err := data.Get("error")
-		if err != nil {
-			hs.ErrorEncoder()(ctx, err.(error), w)
-			return nil
-		}
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//
-		//}
-
-		//var blogs []entity.Blog
-
-		bb := data.Get("data")
-		blogs := bb.([]entity.Blog)
-
-		type bjson struct {
-			Id   string `json:"id"`
-			Name string `json:"name"`
-		}
-		var b []bjson
-
-		for _, blog := range blogs {
-			b = append(b, bjson{Id: blog.Identity().Identity().(string), Name: blog.Name()})
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(b)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.blogsResponse))
 }
 
 func (hs encoderFactory) CreatePostEncoder() tacklehttp.Encoder {
@@ -162,28 +97,7 @@ func (hs encoderFactory) createPostRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) createPostResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
-		//}
-		post := response.(entity.Post)
-
-		bjson := struct {
-			Id   string `json:"id"`
-			Body string `json:"body"`
-			Blog string `json:"blog_id"`
-		}{
-			Id:   post.Identity().Identity().(string),
-			Body: post.Body(),
-			Blog: post.BlogId().Identity().(string),
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(bjson)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.postResponse))
 }
 
 func (hs encoderFactory) ShowPostEncoder() tacklehttp.Encoder {
@@ -200,29 +114,7 @@ func (hs encoderFactory) showPostRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) showPostResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
-		//}
-
-		post := response.(entity.Post)
-
-		bjson := struct {
-			Id   string `json:"id"`
-			Body string `json:"body"`
-			Blog string `json:"blog_id"`
-		}{
-			Id:   post.Identity().Identity().(string),
-			Body: post.Body(),
-			Blog: post.BlogId().Identity().(string),
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(bjson)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.postResponse))
 }
 
 func (hs encoderFactory) ListPostsEncoder() tacklehttp.Encoder {
@@ -240,32 +132,7 @@ func (hs encoderFactory) listPostsRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) listPostsResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
-		//}
-
-		//var blogs []entity.Blog
-
-		posts := response.([]entity.Post)
-
-		type bjson struct {
-			Id   string `json:"id"`
-			Body string `json:"body"`
-			Blog string `json:"blog_id"`
-		}
-		var b []bjson
-
-		for _, post := range posts {
-			b = append(b, bjson{Id: post.Identity().Identity().(string), Body: post.Body(), Blog: post.BlogId().Identity().(string)})
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(b)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.postsResponse))
 }
 
 func (hs encoderFactory) UpdateBlogEncoder() tacklehttp.Encoder {
@@ -285,29 +152,7 @@ func (hs encoderFactory) updateBlogRequest() kithttp.DecodeRequestFunc {
 }
 
 func (hs encoderFactory) updateBlogResponse() kithttp.EncodeResponseFunc {
-	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-		//data := response.(tackle.Packet)
-		//err := hs.errorFromResponse(data)
-		//if err != nil {
-		//	hs.ErrorEncoder()(ctx, err, w)
-		//	return nil
-		//}
-
-		//var blogs []entity.Blog
-
-		blog := response.(entity.Blog)
-
-		bjson := struct {
-			Id   string `json:"id"`
-			Name string `json:"name"`
-		}{
-			Id:   blog.Identity().Identity().(string),
-			Name: blog.Name(),
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		return json.NewEncoder(w).Encode(bjson)
-	})
+	return kithttp.EncodeResponseFunc(hs.errorWrap(hs.blogResponse))
 }
 
 func (hs encoderFactory) ErrorEncoder() kithttp.ErrorEncoder {
@@ -329,4 +174,65 @@ func (hs encoderFactory) errorFromResponse(response interface{}) error {
 		return e
 	}
 	return nil
+}
+
+func (hs encoderFactory) errorWrap(next tackleResponse) kithttp.EncodeResponseFunc {
+	return kithttp.EncodeResponseFunc(func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+		pkt := response.(tackle.Packet)
+		if hs.handleErrorResponse(ctx, w, pkt) {
+			return nil
+		}
+		return next(ctx, w, pkt)
+	})
+}
+
+type tackleResponse func(ctx context.Context, w http.ResponseWriter, response tackle.Packet) error
+
+func (hs encoderFactory) blogResponse(ctx context.Context, w http.ResponseWriter, pkt tackle.Packet) error {
+	blog := pkt.Get("data").(entity.Blog)
+	bytes, err := hs.serializer.JsonBlog(blog)
+
+	return hs.writeJsonResponse(ctx, w, bytes, err)
+}
+
+func (hs encoderFactory) blogsResponse(ctx context.Context, w http.ResponseWriter, pkt tackle.Packet) error {
+	blogs := pkt.Get("data").([]entity.Blog)
+	bytes, err := hs.serializer.JsonBlogs(blogs)
+
+	return hs.writeJsonResponse(ctx, w, bytes, err)
+}
+
+func (hs encoderFactory) postsResponse(ctx context.Context, w http.ResponseWriter, pkt tackle.Packet) error {
+	posts := pkt.Get("data").([]entity.Post)
+	bytes, err := hs.serializer.JsonPosts(posts)
+
+	return hs.writeJsonResponse(ctx, w, bytes, err)
+}
+
+func (hs encoderFactory) postResponse(ctx context.Context, w http.ResponseWriter, pkt tackle.Packet) error {
+	post := pkt.Get("data").(entity.Post)
+	bytes, err := hs.serializer.JsonPost(post)
+
+	return hs.writeJsonResponse(ctx, w, bytes, err)
+}
+
+func (hs encoderFactory) handleErrorResponse(ctx context.Context, w http.ResponseWriter, pkt tackle.Packet) bool {
+	e := pkt.Get("error")
+	if e != nil {
+		hs.ErrorEncoder()(ctx, e.(error), w)
+		return true
+	}
+
+	return false
+}
+
+func (hs encoderFactory) writeJsonResponse(ctx context.Context, w http.ResponseWriter, bytes []byte, err error) error {
+	if err != nil {
+		hs.ErrorEncoder()(ctx, err, w)
+		return nil
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_, err = w.Write(bytes)
+	return err
 }

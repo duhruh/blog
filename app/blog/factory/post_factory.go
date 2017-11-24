@@ -17,8 +17,8 @@ func (b postFactory) PostFromImmutable(u entity.ImmutablePost) entity.Post {
 	post := entity.NewPost()
 	post.SetIdentity(u.Identity())
 	post.SetBody(u.Body())
-	var bb entity.Blog
-	bb.SetIdentity(post.BlogId())
+	bb := entity.NewBlog()
+	bb.SetIdentity(u.BlogId())
 	post.SetBlog(bb)
 	return post
 }

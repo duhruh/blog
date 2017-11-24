@@ -12,11 +12,13 @@ import (
 
 type encoderFactory struct {
 	tacklegrpc.EncoderFactory
+	serializer Serializer
 }
 
-func NewEncoderFactory() tacklegrpc.EncoderFactory {
+func NewEncoderFactory(s Serializer) tacklegrpc.EncoderFactory {
 	return encoderFactory{
 		EncoderFactory: tacklegrpc.NewEncoderFactory(),
+		serializer:     s,
 	}
 }
 
@@ -46,16 +48,8 @@ func (hs encoderFactory) listBlogsResponse() kitgrpc.EncodeResponseFunc {
 
 		blogs := data.([]entity.Blog)
 
-		var protoBlogs []*proto.Blog
-		for _, b := range blogs {
-			protoBlog := &proto.Blog{
-				Id:   b.Identity().Identity().(string),
-				Name: b.Name(),
-			}
+		protoBlogs := hs.serializer.ProtoBlogs(blogs)
 
-			protoBlogs = append(protoBlogs, protoBlog)
-
-		}
 		return &proto.ListBlogsResponse{Blogs: protoBlogs}, nil
 	})
 }
