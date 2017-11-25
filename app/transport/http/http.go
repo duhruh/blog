@@ -57,7 +57,7 @@ func (ht *appHttpTransport) Transports() []tacklehttp.HttpTransport {
 
 func (ht *appHttpTransport) listen(errs chan error, listener net.Listener, wg *sync.WaitGroup) {
 	defer wg.Done()
-	level.Info(ht.logger).Log("transport", "http", "address", ht.addr, "message", "listening")
+	level.Info(ht.logger).Log("transport", "http", "address", ht.addr, "message", "ready for connections")
 	errs <- http.Serve(listener, nil)
 }
 

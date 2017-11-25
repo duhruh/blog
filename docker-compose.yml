@@ -6,9 +6,10 @@ services:
     ports:
      - "${APPLICATION_HTTP_PORT}:8080"
      - "${APPLICATION_GRPC_PORT}:8082"
+     - "5000:5000"
     volumes:
      - ${APPLICATION}:/go/src/github.com/duhruh/blog
-    command: ["go", "run", "cmd/task/main.go", "server", "--watch=true"]
+    command: ["go", "run", "cmd/task/main.go", "server", "--watch=true", "--http=:5000"]
     tty: true
     networks:
       - frontend

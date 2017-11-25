@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -50,6 +51,7 @@ func NewServerTask() task.Task {
 		description:      "Runs the tackle server",
 		options: []task.Option{
 			task.NewOption("watch", "recompiles on file change"),
+			task.NewOption("http", "if set will start a http server listening on the specified port"),
 		},
 		arguments: []task.Argument{},
 	}
@@ -72,6 +74,14 @@ func (t *ServerTask) Run(w io.Writer) {
 	if option.Value() == nil {
 		t.compileAndRun()
 		t.currentCommand.Wait()
+	}
+
+	htt, _ := t.GetOption(t.options, "http")
+	if htt.Value() != nil {
+		go func() {
+			http.HandleFunc("/recompile", t.httpRecompile)
+			http.ListenAndServe(htt.Value().(string), nil)
+		}()
 	}
 
 	directoryWatcher, err := dsnotify.NewDirectoryWatcher()
@@ -139,6 +149,15 @@ func (t *ServerTask) fileChangeEvent(e *fsnotify.Event, err error) {
 		t.Say(t.writer, err.Error())
 	}
 
+	t.recompile()
+}
+
+func (t *ServerTask) httpRecompile(res http.ResponseWriter, req *http.Request) {
+	t.recompile()
+	res.WriteHeader(200)
+}
+
+func (t *ServerTask) recompile() {
 	if t.currentCommand != nil {
 		t.Say(t.writer, "") // newline
 		t.kill()

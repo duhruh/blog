@@ -11,44 +11,44 @@ var uuidRegex = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-
 func getRoutes() []tacklehttp.Route {
 	return []tacklehttp.Route{
 		tacklehttp.NewRoute(
-			"GET",
+			tacklehttp.HttpGET,
 			"/blogs",
 			"ListBlogsEndpoint",
 			"ListBlogsEncoder",
 		),
 		tacklehttp.NewRoute(
-			"POST",
+			tacklehttp.HttpPOST,
 			"/blogs",
 			"CreateBlogEndpoint",
 			"CreateBlogEncoder",
 		),
 		tacklehttp.NewRoute(
-			"PUT",
+			tacklehttp.HttpPUT,
 			fmt.Sprintf("/blogs/{id:%s}", uuidRegex),
 			"UpdateBlogEndpoint",
 			"UpdateBlogEncoder",
 		),
 		tacklehttp.NewRoute(
-			"GET",
+			tacklehttp.HttpGET,
 			fmt.Sprintf("/blogs/{id:%s}", uuidRegex),
 			"ShowBlogEndpoint",
 			"ShowBlogEncoder",
 		),
 
 		tacklehttp.NewRoute(
-			"GET",
+			tacklehttp.HttpGET,
 			fmt.Sprintf("/blogs/{id:%s}/posts", uuidRegex),
 			"ListPostsEndpoint",
 			"ListPostsEncoder",
 		),
 		tacklehttp.NewRoute(
-			"POST",
+			tacklehttp.HttpPOST,
 			fmt.Sprintf("/blogs/{id:%s}/posts", uuidRegex),
 			"CreatePostEndpoint",
 			"CreatePostEncoder",
 		),
 		tacklehttp.NewRoute(
-			"GET",
+			tacklehttp.HttpGET,
 			fmt.Sprintf("/posts/{id:%s}", uuidRegex),
 			"ShowPostEndpoint",
 			"ShowPostEncoder",

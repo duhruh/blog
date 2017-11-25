@@ -69,6 +69,8 @@ func (a *application) Start() {
 
 	wg.Wait()
 
+	a.connection.Close()
+
 	level.Info(a.logger).Log("message", "application halting")
 }
 

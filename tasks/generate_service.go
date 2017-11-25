@@ -128,6 +128,7 @@ func (t GenerateServiceTask) loggingTemplate() string {
 
 import (
 	"time"
+
 	"github.com/go-kit/kit/log"
 )
 
@@ -161,6 +162,7 @@ func (t GenerateServiceTask) instrumentingTemplate() string {
 
 import (
 	"time"
+
 	"github.com/go-kit/kit/metrics"
 )
 
@@ -197,6 +199,7 @@ func (t GenerateServiceTask) endpointTemplate() string {
 
 import (
 	"context"
+
 	"github.com/duhruh/tackle"
 	"github.com/go-kit/kit/endpoint"
 )

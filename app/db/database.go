@@ -35,6 +35,7 @@ type DatabaseConnection interface {
 	Open() sqlbuilder.Database
 	Connection() sqlbuilder.Database
 	ConnectionWithContext(cxt context.Context) sqlbuilder.Database
+	Close() error
 }
 
 type databaseConnection struct {
@@ -59,6 +60,10 @@ func (db *databaseConnection) Open() sqlbuilder.Database {
 	db.session = sess
 
 	return db.session
+}
+
+func (db *databaseConnection) Close() error {
+	return db.session.Close()
 }
 
 func (db *databaseConnection) Connection() sqlbuilder.Database {
